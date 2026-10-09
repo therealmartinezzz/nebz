@@ -28,7 +28,18 @@
 - Qaralamadakı gizli fakt, tələ anı və həll üçün əlavə mətnlər mövcud `persona_prompt` sahəsinə birləşdirilir. `src/lib/types.ts`, API və backend faylları dəyişdirilməyib.
 - Demo auth olmadan işləyir; “Məşqlərim” səhifəsi məxfilik təminatının hazır olduğunu iddia etmir.
 
-## Yoxlama
+## Hərəkət, bildirişlər və keş
+
+- Ortaq motion tokenləri düymə, naviqasiya, seçim, meyar, transkript və qrafik vəziyyətlərini idarə edir. Oxunan kartlar yerindən tərpənmir; `prefers-reduced-motion` hərəkəti azaldır. Mobil input-lar 16px-dir.
+- `Notifications` saytdaxili toast sistemidir: uğur/info 6 saniyə sonra bağlanır, xəta əl ilə bağlanır. Hover, klaviatura focus-u və gizli tab müddəti dayandırır. Eyni bildiriş təkrarlanmır, maksimum 3 mesaj görünür. Ekran oxuyucusu üçün status/alert mövcuddur.
+- Ssenari qaralaması/saxlama, etiraz/rəhbər qərarı, səs bağlantısı və qiymətləndirmə nəticələri həmin sistemə bağlıdır. İnternetin kəsilib bərpa olunması ayrıca bildirilir. Brauzerin native Web Push icazəsi və service worker istifadə edilmir.
+- Data xətası yanında “Yenidən yüklə” server məlumatını yeniləyir. API 401/403/404/405/429, timeout, yanlış JSON və bağlantı xətaları ayrıca idarə edilir. Yazma sorğuları avtomatik təkrarlanmır.
+- Server oxumaları [React `cache`](https://react.dev/reference/react/cache) ilə yalnız bir server request-i daxilində memoizasiya edilir. İstifadəçi nəticələri ortaq və ya davamlı keşdə saxlanmır. Yeni request təzə məlumat oxuyur; uğurlu yazmadan sonra `router.refresh()` çağırılır. API POST cavabları `no-store`-dur.
+- Hesabatların detalları maksimum 6 paralel sorğu ilə yüklənir. Bu, 100 sorğunun eyni anda bazaya göndərilməsini məhdudlaşdırır. Uzunmüddətli server keşinin tag invalidasiyası backend ilə birlikdə qurulmalıdır.
+
+## Yoxlama nəticələri
+
+Bildiriş komponentinin uğur/xəta görünüşləri və bağlanması ayrıca sintetik UI önbaxışında yoxlanıldı. Real builder-də hazır olmayan API-nin 404 cavabı toast + forma mesajı kimi göstərilir; təkrar cəhddə yalnız bir bildiriş qalır və mənbə mətni itmir. Desktop və 375px mobil görünüşlərdə daşma yoxdur. Yeni UI kitabxanası əlavə olunmayıb.
 
 `npm run typecheck` və `npm run build` uğurla keçdi. Desktop və 375px mobil enində route-lar, boş vəziyyətlər və formalar yoxlanıldı; üfüqi daşma yoxdur. Ssenari → mətn zəngi keçidi, boş mətn üçün göndərmə bloklanması və ssenari formasında tələb olunan seçimlər brauzerdə yoxlanıldı. Hesabat/rəhbər yoxlamasının dolu vəziyyəti, rəhbər balının göstərilməsi, qarışıq meyar sayında orta nəticə, Bakı tarixi və API-nin uğur/404/bağlantı xətası izolyasiya edilmiş sintetik yoxlamada təsdiqləndi. Bu yoxlamalar bazaya yazmır və AI çağırmır.
 

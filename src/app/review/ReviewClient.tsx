@@ -27,7 +27,7 @@ export default function ReviewClient({ items }: { items: ReviewItem[] }) {
 
   return <>
     <div className="tabs" aria-label="Yoxlama növbəsi filtrləri">{tabs.map((tab) => <button key={tab.value} type="button" aria-pressed={filter === tab.value} onClick={() => { setFilter(tab.value); setSelectedKey(""); }}>{tab.label} · {tab.value === "all" ? remaining.length : remaining.filter((item) => item.reason === tab.value).length}</button>)}</div>
-    {message && <div className="notice" role="status">{message}</div>}
+    {message && <div className="notice">{message}</div>}
     <div className="split"><section className="select-list" aria-label="Yoxlanacaq zənglər">{visible.map((item) => <button key={itemKey(item)} type="button" className="select-item" aria-pressed={selected && itemKey(selected) === itemKey(item)} onClick={() => setSelectedKey(itemKey(item))}><span className="select-item-title"><strong>{item.call.operator_name}</strong><span className={`pill ${item.reason === "dispute" ? "warn" : "neutral"}`}>{item.reason === "dispute" ? "Etiraz" : "Aşağı etibarlılıq"}</span></span><span className="muted small">{item.call.scenario_title}{item.score ? ` · ${item.score.criterion_name}: ${item.score.score}/2` : " · bütün zəng yoxlanmalıdır"}</span></button>)}{!visible.length && <div className="card"><EmptyState compact title={filter === "all" ? "Yoxlama növbəsi boşdur" : "Bu filtrdə zəng yoxdur"} description="Yoxlanacaq zənglər və əlçatan etirazlar burada görünəcək." /></div>}</section>
       <section className="card stack">
         {selected ? <>

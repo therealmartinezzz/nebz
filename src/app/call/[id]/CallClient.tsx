@@ -9,6 +9,7 @@ import Icon from "@/components/Icon";
 import { DataNotice, EmptyState } from "@/components/ui";
 import { postJSON } from "@/components/api-client";
 import { practiceHref } from "@/components/view-helpers";
+import { useErrorNotification, useNotify } from "@/components/Notifications";
 
 type Status = "idle" | "connecting" | "live" | "scoring" | "ended" | "error";
 type RealtimeEvent = { type: string; item?: { id: string; type: string; role: string }; item_id?: string; transcript?: string; error?: { message?: string } };
@@ -17,6 +18,8 @@ export default function CallClient({ scenarioId, title, department, operatorName
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const notify = useNotify();
+  useErrorNotification(error, "Məşq zamanı xəta baş verdi");
   const [lines, setLines] = useState<Line[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [draft, setDraft] = useState("");
@@ -90,6 +93,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
       if (!answer.ok) throw new Error("Səs bağlantısı qurulmadı.");
       await pc.setRemoteDescription({ type: "answer", sdp: await answer.text() });
       startRef.current = Date.now(); setStatus("live");
+      notify({ tone: "success", title: "Səs bağlantısı hazırdır", description: "Salamlaşma ilə məşqə başlayın." });
     } catch (e) {
       stopVoice(); setError(`${e instanceof Error ? e.message : "Zəng başlamadı."} Mətn rejimi ilə davam edə bilərsiniz.`); setStatus("error");
     }
@@ -114,7 +118,9 @@ export default function CallClient({ scenarioId, title, department, operatorName
     try {
       const result = await postJSON<{ id?: string; error?: string }>("/api/calls", { scenarioId, operatorName, mode, transcript: lines, durationSec: durationRef.current });
       if (!result.id) throw new Error(result.error || "Qiymətləndirmə alınmadı.");
+      notify({ tone: "success", title: "Zəng qiymətləndirildi", description: "Nəticə və transkript üzrə sübutlar hesabatda hazırdır." });
       router.push(`/report/${encodeURIComponent(result.id)}`);
+      router.refresh();
     } catch (e) { setError(e instanceof Error ? e.message : "Qiymətləndirmə alınmadı."); setStatus("ended"); }
   }
   function toggleMute() { streamRef.current?.getAudioTracks().forEach((track) => { track.enabled = muted; }); setMuted(!muted); }
@@ -141,7 +147,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
         {status === "error" && <Link className="btn" href={practiceHref(scenarioId, operatorName, "text")}>Mətn rejiminə keç</Link>}
         <audio ref={audioRef} autoPlay />
       </section>
-      <section className="card transcript-panel"><div className="section-heading"><h2>Canlı transkript</h2><span className="muted small">Qiymətləndirmə zəngdən sonra göstərilir</span></div>{error && <div className="error" role="alert">{error}</div>}
+      <section className="card transcript-panel"><div className="section-heading"><h2>Canlı transkript</h2><span className="muted small">Qiymətləndirmə zəngdən sonra göstərilir</span></div>{error && <div className="error">{error}</div>}
         <div className="transcript-lines" aria-live="polite" aria-relevant="additions text">{!lines.length && <EmptyState title="Danışıq burada görünəcək" description={live ? "İlk cavabınızla söhbətə başlayın." : "Zəngi başlatdıqdan sonra operator və AI müştərinin replikaları vaxtla göstərilir."} />}{lines.map((line, i) => <div key={i} className={`bubble ${line.role === "operator" ? "op" : "cu"}`}><div className="who">{line.role === "operator" ? "Siz · operator" : "AI müştəri"} · {fmtTime(line.t)}</div>{line.text}</div>)}{waiting && <div className="bubble cu muted">AI müştəri cavab hazırlayır…</div>}</div>
         {mode === "text" && live && <form className="text-composer" onSubmit={(event) => { event.preventDefault(); void sendText(); }}><input type="text" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Operator kimi yazın…" aria-label="Operatorun cavabı" maxLength={4000} disabled={waiting} autoFocus /><button className="btn primary" type="submit" disabled={waiting || !draft.trim()}>{waiting ? "Gözləyin…" : "Göndər"}</button></form>}
       </section>

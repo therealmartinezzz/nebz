@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import * as queries from "@/server/queries";
 import type { CallListItem, ScenarioCard } from "@/lib/types";
 import type { Report, ReviewItem, TrainingView } from "./contracts";
@@ -10,23 +11,30 @@ const futureQueries = queries as typeof queries & {
   getMyTraining?: (name: string) => Promise<TrainingView>;
 };
 
-export async function readScenarios(): Promise<Result<ScenarioCard[]>> {
+async function loadScenarios(): Promise<Result<ScenarioCard[]>> {
   try { return { data: await queries.listScenarios(), error: "" }; }
   catch { return { data: [], error: connectionError }; }
 }
-export async function readCalls(): Promise<Result<CallListItem[]>> {
+async function loadCalls(): Promise<Result<CallListItem[]>> {
   try { return { data: await queries.listCalls(100), error: "" }; }
   catch { return { data: [], error: connectionError }; }
 }
-export async function readReport(id: string): Promise<Result<Report | null>> {
+async function loadReport(id: string): Promise<Result<Report | null>> {
   try { return { data: await queries.getCallReport(id), error: "" }; }
   catch { return { data: null, error: connectionError }; }
 }
 export async function readReports(calls: CallListItem[]): Promise<Result<Report[]>> {
-  const results = await Promise.all(calls.map((call) => readReport(call.id)));
+  const results: Result<Report | null>[] = new Array(calls.length);
+  let cursor = 0;
+  await Promise.all(Array.from({ length: Math.min(6, calls.length) }, async () => {
+    while (cursor < calls.length) {
+      const index = cursor++;
+      results[index] = await readReport(calls[index].id);
+    }
+  }));
   return { data: results.flatMap(({ data }) => data ? [data] : []), error: results.some(({ error, data }) => error || !data) ? "Bəzi zənglərin detalları yüklənmədi. Meyar göstəriciləri hələ əlçatan deyil." : "" };
 }
-export async function readReviewQueue(): Promise<Result<ReviewItem[]> & { disputesAvailable: boolean }> {
+async function loadReviewQueue(): Promise<Result<ReviewItem[]> & { disputesAvailable: boolean }> {
   if (futureQueries.getReviewQueue) {
     try {
       const data = await futureQueries.getReviewQueue();
@@ -47,7 +55,7 @@ export async function readReviewQueue(): Promise<Result<ReviewItem[]> & { disput
     disputesAvailable: false,
   };
 }
-export async function readTraining(name: string): Promise<Result<TrainingView>> {
+async function loadTraining(name: string): Promise<Result<TrainingView>> {
   const empty: TrainingView = { name, last: null, recommended_scenario: null, history: [] };
   if (!name) return { data: empty, error: "" };
   if (futureQueries.getMyTraining) {
@@ -64,3 +72,11 @@ export async function readTraining(name: string): Promise<Result<TrainingView>> 
   const recommended = scenarios.data.find((scenario) => recommendation.includes(scenario.title.toLocaleLowerCase("az-AZ"))) ?? null;
   return { data: { name, history, last: last.data?.call ?? null, recommended_scenario: recommended }, error: last.error || scenarios.error };
 }
+
+// Request-scoped memoization: share reads within one render, never between users.
+// New navigation/refresh starts a fresh cache, including after successful writes.
+export const readScenarios = cache(loadScenarios);
+export const readCalls = cache(loadCalls);
+export const readReport = cache(loadReport);
+export const readReviewQueue = cache(loadReviewQueue);
+export const readTraining = cache(loadTraining);
