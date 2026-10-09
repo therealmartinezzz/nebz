@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Navigation from "@/components/Navigation";
+import Notifications from "@/components/Notifications";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,22 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <header className="topbar">
-          <Link href="/" className="brand">
-            <span className="brand-mark" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12h4l3-7 4 14 3-7h4" />
-              </svg>
-            </span>
-            Nəbz
-          </Link>
-          <nav className="nav">
-            <Link href="/">Ssenarilər</Link>
-            <Link href="/reports">Hesabatlar</Link>
-          </nav>
-          <span className="muted" style={{ fontSize: 13 }}>NovaBank · demo şirkət</span>
-        </header>
-        {children}
+        <Notifications><Navigation />{children}</Notifications>
       </body>
     </html>
   );
