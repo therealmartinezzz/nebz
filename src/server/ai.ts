@@ -155,7 +155,8 @@ export async function draftScenario(input: ScenarioDraftInput): Promise<Scenario
   };
   return normalizeScenario({
     title: str(p.title),
-    summary: str(p.summary),
+    // Frontend formasında xülasə məcburidir — model yazmasa, adla doldururuq (redaktə olunur).
+    summary: str(p.summary) || str(p.title),
     persona_prompt: str(p.persona_prompt),
     rubric: p.rubric,
     meta,

@@ -166,6 +166,8 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect(item).toMatchObject({ reason: "low_confidence", reason_text: "01:12-də aydın deyil", dispute: null });
       expect(item!.scores).toHaveLength(6);
       expect(item!.transcript_excerpt).toHaveLength(6);
+      expect(item!.score).toBeNull(); // frontend: score yoxdursa bütün zəng yoxlanır
+      expect(item!.transcript).toHaveLength(6);
       expect(item!.call).toMatchObject({ operator_name: OP, scenario_title: "Bloklanmış kart", department: "Kart xidmətləri" });
     });
 
@@ -205,6 +207,8 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect(item.key).toBe(`dispute:${r.body.id}`);
       expect(item.scores).toHaveLength(1);
       expect(item.scores[0].id).toBe(s4.id);
+      expect(item.score?.id).toBe(s4.id); // frontend contracts.ts ReviewItem.score
+      expect(item.transcript).toHaveLength(6);
       expect(item.dispute?.comment).toMatch(/imtina etdi/);
       expect(item.reason_text).toBe("Bloklanmış kart · Meyar adı yoxlanılır: 0/2".replace("Meyar adı yoxlanılır", s4.criterion_name));
       // Sübut [01:04] → həmin replika fraqmentdədir, tam transkript yox.
@@ -282,7 +286,8 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
 
     it("məşqlərim: son hesabat, tövsiyə olunan ssenari, tarixçə", async () => {
       const t = await q.getMyTraining(OP);
-      expect(t.last?.call.id).toBe(call2);
+      expect(t.last?.id).toBe(call2);
+      expect(t.last?.strengths).toEqual(["Yoxlamanı təzyiqə baxmayaraq apardı"]);
       expect(t.recommendation_text).toBe("Təkrar zəng edən müştəri");
       expect(t.history).toHaveLength(2);
       expect(t.recommended_scenario).not.toBeNull();

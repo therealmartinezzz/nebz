@@ -106,7 +106,11 @@ export type CallReport = {
 export type CallListItem = Pick<
   CallRow,
   "id" | "operator_name" | "total" | "max_total" | "confidence" | "duration_sec" | "created_at" | "mode"
-> & { scenarios: { title: string; department: string } | null; final_total: number };
+> & {
+  scenarios: { title: string; department: string } | null;
+  /** Backend həmişə doldurur; optional-dır ki, CallRow da CallListItem kimi istifadə oluna bilsin. */
+  final_total?: number;
+};
 
 export type CriterionAvg = { criterion: number; name: string; avg: number; count: number };
 
@@ -124,9 +128,11 @@ export type ReviewItem = {
     department: string;
     confidence_reason: string | null;
   };
-  scores: ScoreWithReviews[]; // dispute: yalnız etiraz olunan meyar; low_confidence: hamısı
+  score: ScoreWithReviews | null; // dispute: etiraz olunan meyar; low_confidence: null (bütün zəng)
+  scores: ScoreWithReviews[]; // dispute: [score]; low_confidence: bütün meyarlar
   dispute: Review | null;
   transcript_excerpt: Line[]; // dispute: sübut vaxtı ətrafı; low_confidence: tam transkript
+  transcript: Line[]; // həmişə tam transkript
 };
 
 // ---- Ekran 4 · Şirkət paneli ----
@@ -158,7 +164,7 @@ export type OperatorProfile = {
 
 export type TrainingView = {
   name: string;
-  last: CallReport | null;
+  last: CallRow | null; // son zəng (strengths / improvements / training_recommendation)
   recommended_scenario: ScenarioCard | null;
   recommendation_text: string | null;
   history: CallListItem[];

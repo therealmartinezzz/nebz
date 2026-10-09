@@ -71,7 +71,9 @@ async function scoresFor(callIds: string[]): Promise<Map<string, ScoreWithReview
 const finalTotal = (scores: ScoreWithReviews[] | undefined, fallback: number) =>
   scores?.length ? scores.reduce((a, s) => a + s.final_score, 0) : fallback;
 
-function toListItem(c: CallRow, scores: ScoreWithReviews[] | undefined): CallListItem {
+type ListItem = CallListItem & { final_total: number };
+
+function toListItem(c: CallRow, scores: ScoreWithReviews[] | undefined): ListItem {
   return {
     id: c.id,
     operator_name: c.operator_name,
@@ -149,7 +151,7 @@ export async function getCallReport(id: string): Promise<CallReport | null> {
   };
 }
 
-export async function listCalls(limit = 100): Promise<CallListItem[]> {
+export async function listCalls(limit = 100): Promise<ListItem[]> {
   const { calls, scores } = await loadCalls();
   return calls.slice(0, limit).map((c) => toListItem(c, scores.get(c.id)));
 }
@@ -186,9 +188,11 @@ function buildQueue(calls: CallRow[], scores: Map<string, ScoreWithReviews[]>): 
         reason: "dispute",
         reason_text: `${c.scenarios?.title ?? "Zəng"} · ${s.criterion_name}: ${s.score}/2`,
         call: callInfo,
+        score: s,
         scores: [s],
         dispute,
         transcript_excerpt: excerptAround(c.transcript ?? [], s.evidence),
+        transcript: c.transcript ?? [],
         sortAt: dispute.created_at,
       });
     }
@@ -199,9 +203,11 @@ function buildQueue(calls: CallRow[], scores: Map<string, ScoreWithReviews[]>): 
         reason: "low_confidence",
         reason_text: c.confidence_reason || "AI əmin deyil",
         call: callInfo,
+        score: null,
         scores: list,
         dispute: null,
         transcript_excerpt: c.transcript ?? [],
+        transcript: c.transcript ?? [],
         sortAt: c.created_at,
       });
     }
@@ -289,18 +295,7 @@ export async function getOperatorProfile(name: string): Promise<OperatorProfile 
 export async function getMyTraining(name: string): Promise<TrainingView> {
   const [{ calls, scores }, scenarios] = await Promise.all([loadCalls({ operator: name }), listScenarios()]);
   const history = calls.map((c) => toListItem(c, scores.get(c.id)));
-  const lastCall = calls[0];
-  const last: CallReport | null = lastCall
-    ? (() => {
-        const list = scores.get(lastCall.id) ?? [];
-        return {
-          call: lastCall,
-          scores: list,
-          final_total: finalTotal(list, lastCall.total),
-          reviewed: list.some((s) => s.manager_score !== null),
-        };
-      })()
-    : null;
+  const lastCall = calls[0] ?? null;
 
   // Tövsiyə: əvvəlcə hələ edilməmiş ssenari; hamısı edilibsə — faizlə ən zəif nəticəli ssenari.
   const done = new Set(calls.map((c) => c.scenario_id));
@@ -316,7 +311,7 @@ export async function getMyTraining(name: string): Promise<TrainingView> {
 
   return {
     name,
-    last,
+    last: lastCall,
     recommended_scenario: recommended,
     recommendation_text: lastCall?.training_recommendation ?? null,
     history,
