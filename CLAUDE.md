@@ -1,5 +1,7 @@
 @AGENTS.md
 
+> **Hardayıq:** `docs/08-checkpoint-and-budget.md` — yeni sessiyada əvvəlcə onu oxu (vəziyyət, açıq məsələlər, model/büdcə qərarı).
+
 # Claude Code: backend rolu
 
 Bu sessiya **backend** tərəfidir: `src/app/api/**`, `src/server/**`, `supabase/**` və `src/lib/types.ts` müqaviləsi. Frontend Codex-də başqa kompüterdə işləyir — onun yollarına (`page.tsx`, `*Client.tsx`, `components/`, `globals.css`) yalnız açıq razılıqla toxun.
@@ -9,4 +11,6 @@ Bu sessiya **backend** tərəfidir: `src/app/api/**`, `src/server/**`, `supabase
 - Model çıxışına tam etibar etmə: JSON-u yoxla, balı 0–2 aralığına sal, cəmi serverdə hesabla, xətada aydın Azərbaycan dilində mesajla 4xx/5xx qaytar (heç vaxt boş və ya HTML cavab).
 - Sxem dəyişikliyi = yeni fayl `supabase/migrations/000N_*.sql`. Ortaq demo bazasına tətbiq et və PR-da qeyd et. `seed.sql`-i təkrar işə salma.
 - Bazaya qoşulma: birbaşa `db.<ref>.supabase.co` hostu IPv6-dır, Windows-da işləmir — session pooler istifadə et (`.env.local` → `SUPABASE_DB_URL`).
-- Claude modeli: `CLAUDE_MODEL` env (default `claude-sonnet-5-5`).
+- Hər backend dəyişikliyindən sonra: `npm run typecheck && npm test && npm run test:integration`. Yeni endpoint = `tests/integration/flow.test.ts`-də test. Model həmişə mock-lanır (real açarla yoxlama — ayrıca, əl ilə).
+- vitest-də `beforeEach(() => fn())` YAZMA — qaytarılan funksiya cleanup kimi çağırılır; blok gövdəsi istifadə et.
+- Model: `src/server/llm.ts` → `LLM_PROVIDER` (claude | gemini), `CLAUDE_MODEL`, `GEMINI_MODEL`. Model çağırışı yalnız `complete()` ilə.
