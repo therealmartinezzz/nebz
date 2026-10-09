@@ -9,7 +9,6 @@ export async function postJSON<T>(path: string, body: unknown): Promise<T> {
   if (response.status === 404 || response.status === 405) throw new Error("Bu əməliyyat hələ əlçatan deyil. Məlumatlar saxlanılmadı; daha sonra yenidən cəhd edin.");
   if (response.status === 401) throw new Error("Sessiyanız bitib. Yenidən daxil olub əməliyyatı təkrarlayın.");
   if (response.status === 403) throw new Error("Bu əməliyyat üçün icazəniz yoxdur. Rəhbərlə əlaqə saxlayın.");
-  if (response.status === 429) throw new Error("Sorğu limiti dolub. Bir qədər gözləyib yenidən cəhd edin.");
   const data = await response.json().catch(() => null);
   if (!response.ok || data === null) throw new Error(typeof data?.error === "string" ? data.error : "Əməliyyat tamamlanmadı. Yenidən cəhd edin.");
   return data as T;

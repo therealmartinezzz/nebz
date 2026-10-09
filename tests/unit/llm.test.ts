@@ -43,3 +43,24 @@ describe("açar yoxdursa aydın konfiqurasiya xətası (şəbəkəyə getmədən
     await expect(complete(args)).rejects.toThrow(/GEMINI_API_KEY/);
   });
 });
+
+describe("Gemini işlər üzrə model bölgüsü", () => {
+  it("tez-tez çağırılan müştəri Lite, qiymətləndirmə və qaralama Flash istifadə edir", () => {
+    vi.stubEnv("LLM_PROVIDER", "gemini");
+    for (const key of ["GEMINI_MODEL", "GEMINI_CUSTOMER_MODEL", "GEMINI_SCORING_MODEL", "GEMINI_DRAFT_MODEL"]) vi.stubEnv(key, "");
+    expect(modelName("customer")).toBe("gemini-3.5-flash-lite");
+    expect(modelName("scoring")).toBe("gemini-3.8-flash");
+    expect(modelName("draft")).toBe("gemini-3.8-flash");
+  });
+
+  it("hər işin modeli ümumi modeldən əvvəl seçilir; hesabat default olaraq qiymətləndiricini qeyd edir", () => {
+    vi.stubEnv("LLM_PROVIDER", "gemini");
+    vi.stubEnv("GEMINI_MODEL", "legacy-model");
+    vi.stubEnv("GEMINI_CUSTOMER_MODEL", "customer-model");
+    vi.stubEnv("GEMINI_SCORING_MODEL", "scoring-model");
+    vi.stubEnv("GEMINI_DRAFT_MODEL", "draft-model");
+    expect(modelName("customer")).toBe("customer-model");
+    expect(modelName()).toBe("scoring-model");
+    expect(modelName("draft")).toBe("draft-model");
+  });
+});

@@ -34,6 +34,7 @@ export async function customerReply(persona: string, transcript: Line[]) {
     else messages.push({ role, content: l.text });
   }
   const text = await complete({
+    task: "customer",
     system: persona + "\n\nYalnız müştərinin sözlərini yaz, təsvir və ya qeyd əlavə etmə.",
     messages,
     maxTokens: 200,
@@ -66,6 +67,7 @@ export async function scoreCall(rubric: Criterion[], transcript: Line[]): Promis
     .join("\n");
 
   const raw = await complete({
+    task: "scoring",
     system: SCORING_SYSTEM,
     messages: [{ role: "user", content: `MEYARLAR:\n${rubricText}\n\nTRANSKRİPT:\n${transcriptText}` }],
     maxTokens: 2000,
@@ -132,6 +134,7 @@ Yalnız bu JSON-u qaytar:
 
 export async function draftScenario(input: ScenarioDraftInput): Promise<ScenarioDraft> {
   const raw = await complete({
+    task: "draft",
     system: DRAFT_SYSTEM,
     messages: [
       {

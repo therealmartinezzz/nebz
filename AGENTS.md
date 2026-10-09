@@ -3,7 +3,7 @@
 Bu fayl Codex (frontend) və Claude Code (backend) üçün ortaq qaydadır. İşə başlamazdan əvvəl bunu, sonra `docs/` qovluğunu oxu.
 
 ## Nə qururuq
-NeuroBridge.SI Baku 2026 hackathonu, **AI Enterprise Solutions** bölməsi. Məhsul: **Nəbz** — AI müştəri ilə xidmət keyfiyyəti məşqi və qiymətləndirməsi. Operator AI müştəri ilə real ssenari üzrə danışır, Claude zəngi meyarlar üzrə qiymətləndirir, rəhbər hesabatı görür və son qərarı verir. Ətraflı: `docs/01-brief.md`.
+NeuroBridge.SI Baku 2026 hackathonu, **AI Enterprise Solutions** bölməsi. Məhsul: **Nəbz** — AI müştəri ilə xidmət keyfiyyəti məşqi və qiymətləndirməsi. Operator AI müştəri ilə real ssenari üzrə danışır, Gemini zəngi meyarlar üzrə qiymətləndirir, rəhbər hesabatı görür və son qərarı verir. Ətraflı: `docs/01-brief.md`. Cari inteqrasiya statusu: `docs/08-checkpoint-and-budget.md`.
 
 ## Vaxt
 - **9 oktyabr 2026, 20:00 (Bakı) — sərt son tarix.** Bundan sonra kod dondurulur.

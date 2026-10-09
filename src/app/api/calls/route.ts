@@ -4,6 +4,7 @@ import { scoreCall } from "@/server/ai";
 import { modelName, provider } from "@/server/llm";
 import { fail, isUuid, modelFailure, readJson } from "@/server/http";
 import type { Line, Scenario } from "@/lib/types";
+import { withDemoRequest } from '@/server/demo-budget';
 
 type Body = {
   scenarioId: string;
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
     .filter((l) => (l?.role === "operator" || l?.role === "customer") && typeof l.text === "string" && l.text.trim())
     .map((l) => ({ role: l.role, text: l.text.trim(), t: Math.max(0, Number(l.t) || 0) }));
   if (transcript.length < 2) return fail("Transkript çox qısadır, qiymətləndirmək mümkün deyil");
+  if (transcript.length > 100 || transcript.map(l => l.text).join('').length > 16000) return fail('Demo transkripti çox uzundur (maksimum 16 000 simvol).');
 
   const supa = db();
   const { data: scenario } = await supa.from("scenarios").select("*").eq("id", body.scenarioId).maybeSingle<Scenario>();
@@ -31,7 +33,7 @@ export async function POST(req: Request) {
   const started = Date.now();
   let result;
   try {
-    result = await scoreCall(scenario.rubric, transcript);
+    result = await withDemoRequest(req, () => scoreCall(scenario.rubric, transcript));
   } catch (e) {
     return modelFailure(e, "Qiymətləndirmə alınmadı, yenidən cəhd edin", "scoreCall");
   }
