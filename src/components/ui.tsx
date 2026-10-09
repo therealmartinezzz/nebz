@@ -4,6 +4,7 @@ import type { CallListItem } from "@/lib/types";
 import { fmtTime } from "@/lib/format";
 import { date, number } from "./view-helpers";
 import Icon from "./Icon";
+import DataFeedback from "./DataFeedback";
 
 export function PageHeading({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
   return <div className="page-heading"><div><h1>{title}</h1>{description && <p className="muted">{description}</p>}</div>{action}</div>;
@@ -12,7 +13,7 @@ export function EmptyState({ title, description, action, compact = false }: { ti
   return <div className={`empty-state${compact ? " small" : ""}`}><Icon name="document" width="28" height="28" /><h3>{title}</h3><p>{description}</p>{action}</div>;
 }
 export function DataNotice({ error }: { error: string }) {
-  return error ? <div className="notice warn" role="alert"><strong>Məlumat əlçatan deyil</strong><p>{error}</p></div> : null;
+  return error ? <DataFeedback error={error} /> : null;
 }
 export function Metric({ label, value, suffix, warn }: { label: string; value: ReactNode; suffix?: string; warn?: boolean }) {
   return <div className="card metric"><div className="muted">{label}</div><div className={`metric-value${warn ? " warn-text" : ""}`}>{value}{suffix && <span>{suffix}</span>}</div></div>;

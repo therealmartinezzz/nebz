@@ -6,6 +6,7 @@ import type { ScenarioDraft } from "@/components/contracts";
 import { postJSON } from "@/components/api-client";
 import { EmptyState, PageHeading } from "@/components/ui";
 import { practiceHref } from "@/components/view-helpers";
+import { useErrorNotification, useNotify } from "@/components/Notifications";
 
 const customerTypes = ["Əsəbi", "Tələsən", "Çaşqın", "Yaşlı"];
 const levels = ["0", "1", "2"] as const;
@@ -24,6 +25,8 @@ export default function BuilderClient() {
   const [operatorName, setOperatorName] = useState("");
   const [busy, setBusy] = useState<"generate" | "save" | "test" | null>(null);
   const [error, setError] = useState("");
+  const notify = useNotify();
+  useErrorNotification(error, "Ssenari əməliyyatı tamamlanmadı");
 
   async function generate() {
     if (!standard.trim() || busy) return;
@@ -32,6 +35,7 @@ export default function BuilderClient() {
       const result = await postJSON<ScenarioDraft>("/api/scenarios/draft", { standard: standard.trim(), department, language: "az", customerType: customers.join(", "), difficulty });
       if (!validDraft(result)) throw new Error("AI qaralaması tələb olunan formaya uyğun deyil. Yenidən yaradın; mənbə mətni formadadır.");
       setDraft(result); setExtras({ hidden: "", trap: "", solution: "" });
+      notify({ tone: "success", title: "Qaralama hazırdır", description: "Persona və meyarları nəzərdən keçirib redaktə edə bilərsiniz." });
     } catch (e) { setError(e instanceof Error ? e.message : "Qaralama yaradılmadı."); }
     finally { setBusy(null); }
   }
@@ -44,6 +48,7 @@ export default function BuilderClient() {
     try {
       const result = await postJSON<{ id: string }>("/api/scenarios", { ...draft, persona_prompt: [draft.persona_prompt, additions].filter(Boolean).join("\n\n"), department });
       if (!result.id) throw new Error("Ssenarinin saxlanması təsdiqlənmədi. Yenidən cəhd edin.");
+      notify({ tone: "success", title: "Ssenari saxlanıldı", description: test ? "Sınaq zəngi açılır." : "Yeni ssenari siyahıya əlavə edildi." });
       router.push(test ? practiceHref(result.id, operatorName.trim()) : "/"); router.refresh();
     } catch (e) { setError(e instanceof Error ? e.message : "Ssenari saxlanılmadı."); }
     finally { setBusy(null); }
@@ -57,13 +62,13 @@ export default function BuilderClient() {
 
   return <>
     <PageHeading title="Yeni ssenari" description="Şirkətin xidmət standartını yapışdırın. AI ondan müştəri ssenarisi və qiymətləndirmə meyarları hazırlayır." action={<ol className="steps" aria-label="Ssenari yaratma mərhələləri"><li aria-current={!draft ? "step" : undefined}>1 Mənbə</li><li aria-current={draft ? "step" : undefined}>2 AI qaralaması</li><li>3 Sınaq və təsdiq</li></ol>} />
-    {error && <div className="error" role="alert">{error}</div>}
+    {error && <div className="error">{error}</div>}
     <div className="split"><form className="card stack" onSubmit={(event) => { event.preventDefault(); void generate(); }}><h2>Mənbə</h2>
       <label className="field">Xidmət standartı və ya zəng skripti<textarea rows={9} value={standard} onChange={(event) => setStandard(event.target.value)} placeholder="Standartın nömrələnmiş bəndlərini buraya yapışdırın" maxLength={30000} required disabled={Boolean(busy)} /><span className="hint">Yalnız mətn qəbul olunur. Real müştəri məlumatı daxil etməyin.</span></label>
       <div className="form-grid"><label className="field">Departament<select value={department} onChange={(event) => setDepartment(event.target.value)} disabled={Boolean(busy)}><option>Kart xidmətləri</option><option>Köçürmələr</option><option>Kreditlər</option><option>Müştəri xidmətləri</option></select></label><label className="field">Dil<select value="az" disabled><option value="az">Azərbaycan dili</option></select></label></div>
       <fieldset disabled={Boolean(busy)}><legend>Müştəri tipi</legend><div className="chip-list">{customerTypes.map((type) => <button key={type} type="button" className="chip-button" aria-pressed={customers.includes(type)} onClick={() => setCustomers((current) => current.includes(type) ? current.filter((item) => item !== type) : [...current, type])}>{type}</button>)}</div></fieldset>
       <fieldset disabled={Boolean(busy)}><legend>Çətinlik</legend><div className="score-options">{[{ value: "low", label: "Aşağı" }, { value: "medium", label: "Orta" }, { value: "high", label: "Yüksək" }].map((item) => <label key={item.value}><input type="radio" name="difficulty" value={item.value} checked={difficulty === item.value} onChange={() => setDifficulty(item.value)} />{item.label}</label>)}</div></fieldset>
-      <button className="btn primary full" type="submit" disabled={Boolean(busy) || !standard.trim() || !customers.length}>{busy === "generate" ? "AI qaralama hazırlayır…" : draft ? "AI ilə yenidən yarat" : "AI qaralaması yarat"}</button>
+      <button className="btn primary full" type="submit" aria-busy={busy === "generate"} disabled={Boolean(busy) || !standard.trim() || !customers.length}>{busy === "generate" ? "AI qaralama hazırlayır…" : draft ? "AI ilə yenidən yarat" : "AI qaralaması yarat"}</button>
     </form><div className="stack">
       <section className="card stack"><div className="section-heading"><h2>AI qaralaması{draft?.title && ` · ${draft.title}`}</h2><span className="muted small">Hər sahə redaktə olunur</span></div>
         {draft ? <><label className="field">Ssenarinin başlığı<input type="text" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} disabled={Boolean(busy)} maxLength={200} /></label><label className="field">Xülasə<textarea rows={2} value={draft.summary} onChange={(event) => setDraft({ ...draft, summary: event.target.value })} disabled={Boolean(busy)} /></label><div className="form-grid"><label className="field info-block">Persona<textarea className="draft-field" rows={4} value={draft.persona_prompt} onChange={(event) => setDraft({ ...draft, persona_prompt: event.target.value })} disabled={Boolean(busy)} /></label><label className="field info-block">Gizli fakt<textarea className="draft-field" rows={4} value={extras.hidden} onChange={(event) => setExtras({ ...extras, hidden: event.target.value })} disabled={Boolean(busy)} placeholder="Persona üçün əlavə fakt (istəyə bağlı)" /></label><label className="field info-block warn">Tələ anı<textarea className="draft-field" rows={3} value={extras.trap} onChange={(event) => setExtras({ ...extras, trap: event.target.value })} disabled={Boolean(busy)} placeholder="Standartın yoxlandığı an (istəyə bağlı)" /></label><label className="field info-block accent">Düzgün həll<textarea className="draft-field" rows={3} value={extras.solution} onChange={(event) => setExtras({ ...extras, solution: event.target.value })} disabled={Boolean(busy)} placeholder="Gözlənilən həll yolu (istəyə bağlı)" /></label></div></> : <EmptyState title="Qaralama hələ yaradılmayıb" description="Mənbə mətni və müştəri tipini seçərək AI qaralaması yaradın. Persona, gizli fakt, tələ anı və həll burada redaktə olunur." />}

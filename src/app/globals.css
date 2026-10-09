@@ -3,6 +3,7 @@
   --accent: #0f6e66; --accent-ink: #0a4f49; --accent-soft: #e6f1f0;
   --warn: #c2410c; --warn-ink: #8a3a08; --warn-soft: #fdf0e1;
   --dark: #111827; --dark-muted: #c5cbd3; --dark-accent: #3cc4b4; --control-line: #c9ced6;
+  --motion-fast: 140ms; --motion-state: 240ms; --ease-arrive: cubic-bezier(.16, 1, .3, 1);
 }
 * { box-sizing: border-box; scrollbar-color: var(--control-line) var(--bg); scrollbar-width: thin; }
 html { color-scheme: light; scroll-behavior: smooth; }
@@ -268,3 +269,74 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); width
   .operator-picker .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .waveform.active span { animation: none; height: var(--height); } }
+
+/* Motion acknowledges a choice or outcome; reading surfaces stay still. */
+.data-feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.data-feedback > div { flex: 1 1 220px; }
+.btn, .nav a, .select-item, .chip-button, .tabs button, .radio-card, .score-options label, .icon-button {
+  transition: background-color var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast), transform var(--motion-fast) var(--ease-arrive);
+}
+input[type="text"], textarea, select { transition: border-color var(--motion-fast), background-color var(--motion-fast); }
+input:focus-visible, textarea:focus-visible, select:focus-visible { border-color: var(--accent); }
+.btn:active:not(:disabled), .chip-button:active:not(:disabled), .tabs button:active:not(:disabled), .icon-button:active:not(:disabled) { transform: scale(.98); }
+.btn:disabled:hover { background: var(--surface); }
+.btn.primary:disabled:hover { background: var(--accent); border-color: var(--accent); }
+.btn.danger:disabled:hover { background: var(--warn); border-color: var(--warn); }
+.btn svg, .back-link svg { transition: transform var(--motion-fast) var(--ease-arrive); }
+.select-item[aria-pressed="true"] { background: var(--accent-soft); }
+.select-item .pill { animation: selection-confirm var(--motion-state) var(--ease-arrive); }
+.scenario-change { animation: choice-reveal var(--motion-state) var(--ease-arrive); }
+.bubble { animation: message-arrive var(--motion-state) var(--ease-arrive); }
+.bar-track > div { transform-origin: left; animation: bar-read 380ms var(--ease-arrive); }
+.week-bar { transform-origin: bottom; animation: bar-read-vertical 380ms var(--ease-arrive); }
+.transcript-detail[open] > :not(summary) { animation: choice-reveal 180ms var(--ease-arrive); }
+.transcript-detail summary { border-radius: 6px; transition: color var(--motion-fast); }
+.loading-line { animation: loading-breathe 1.4s ease-in-out infinite alternate; }
+.btn:disabled { transform: none; }
+.btn[aria-busy="true"]::before { content: ""; width: 16px; height: 16px; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 50%; animation: busy-turn .8s linear infinite; }
+@media (hover: hover) and (pointer: fine) {
+  .back-link:hover svg { transform: translateX(-3px); }
+  .btn:hover:not(:disabled) svg { transform: scale(1.08); }
+  .chip-button:hover:not(:disabled):not([aria-pressed="true"]), .tabs button:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--accent-soft); border-color: var(--accent); }
+  .radio-card:hover:not(.unavailable), .score-options label:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .select-item:hover { background: var(--accent-soft); }
+  .data-table tbody tr { transition: background-color var(--motion-fast); }
+  .data-table tbody tr:hover { background: var(--accent-soft); }
+  .transcript-detail summary:hover { color: var(--accent); }
+  .icon-button:hover:not(:disabled) { border-color: var(--dark-accent); background: var(--dark); }
+  .icon-button.end:hover:not(:disabled) { background: var(--warn-ink); border-color: var(--warn-ink); }
+}
+@keyframes selection-confirm { from { transform: scale(.92); } to { transform: scale(1); } }
+@keyframes choice-reveal { from { opacity: .65; } to { opacity: 1; } }
+@keyframes message-arrive { from { opacity: .6; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bar-read { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes bar-read-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes loading-breathe { from { opacity: .45; } to { opacity: 1; } }
+@keyframes busy-turn { to { transform: rotate(360deg); } }
+
+.toast-region { position: fixed; z-index: 100; inset-block-start: 76px; inset-inline-end: 12px; width: min(444px, calc(100vw - 8px)); max-height: calc(100dvh - 88px); padding: 12px; overflow-y: auto; pointer-events: none; }
+.toast-list { display: flex; flex-direction: column; gap: 12px; list-style: none; margin: 0; padding: 0; }
+.toast { position: relative; display: grid; grid-template-columns: 36px minmax(0,1fr) 40px; align-items: start; gap: 10px; padding: 16px 10px 18px 16px; background: var(--surface); border-radius: 14px; color: var(--ink); box-shadow: 0 8px 32px rgb(17 24 39 / .16); overflow: hidden; pointer-events: auto; animation: toast-arrive 300ms var(--ease-arrive); }
+.toast + .toast { margin: 0; }
+.toast-symbol { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); }
+.toast.error .toast-symbol { background: var(--warn-soft); color: var(--warn-ink); }
+.toast-copy { min-width: 0; padding-top: 3px; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.toast-copy strong { font-size: 15px; display: block; }
+.toast-copy p { margin-top: 5px; color: var(--muted); }
+.toast-close { width: 40px; min-height: 44px; display: grid; place-items: center; margin-top: -4px; padding: 0; color: var(--muted); background: transparent; border: 0; border-radius: 8px; cursor: pointer; transition: color var(--motion-fast), background-color var(--motion-fast); }
+.toast-close:hover { color: var(--ink); background: var(--bg); }
+.toast-lifetime { position: absolute; inset-inline: 0; inset-block-end: 0; height: 3px; background: var(--accent); transform-origin: left; animation: toast-lifetime 6s linear forwards; }
+@keyframes toast-arrive { from { opacity: .4; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toast-lifetime { to { transform: scaleX(0); } }
+@media (max-width: 620px) {
+  input[type="text"], textarea, select { font-size: 16px; }
+  .toast-region { inset-block-start: auto; inset-block-end: max(4px, env(safe-area-inset-bottom)); inset-inline-end: 4px; max-height: min(60dvh, 540px); }
+  .toast { grid-template-columns: 32px minmax(0,1fr) 40px; padding-inline-start: 12px; }
+  .toast-symbol { width: 32px; height: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn, .nav a, .select-item, .chip-button, .tabs button, .radio-card, .score-options label, .icon-button, .btn svg, .back-link svg { transition-duration: 80ms; transform: none !important; }
+  .scenario-change, .select-item .pill, .bubble, .bar-track > div, .week-bar, .transcript-detail[open] > :not(summary), .toast, .loading-line { animation: none; }
+  .toast-lifetime { animation: none; display: none; }
+  .btn[aria-busy="true"]::before { animation: none; border-style: dotted; }
+}

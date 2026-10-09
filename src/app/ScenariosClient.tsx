@@ -22,7 +22,7 @@ export default function ScenariosClient({ scenarios, operatorName }: { scenarios
     </section>
     <section className="card stack scenario-detail" aria-label="Seçilmiş ssenarinin detalları">
       {selected ? <>
-        <div className="persona"><div className="avatar" aria-hidden="true">AI</div><div><h2>{selected.title}</h2><p className="muted">{selected.summary || "AI bu ssenaridə müştəri rolunu oynayacaq."}</p></div></div>
+        <div className="persona scenario-change" key={selected.id}><div className="avatar" aria-hidden="true">AI</div><div><h2>{selected.title}</h2><p className="muted">{selected.summary || "AI bu ssenaridə müştəri rolunu oynayacaq."}</p></div></div>
         <div className="form-grid"><div className="info-block"><h3>Departament</h3><strong>{selected.department}</strong></div><div className="info-block"><h3>Dil</h3><strong>Azərbaycan dili</strong></div></div>
         <section><h2>Ölçülən meyarlar · {selected.rubric.length * 2} bal</h2><div className="chip-list">{selected.rubric.map((criterion) => <span className="chip" key={criterion.id}>{criterion.name}</span>)}</div></section>
       </> : <><div className="persona"><div className="avatar" aria-hidden="true">AI</div><div><h2>AI müştəri ilə məşq</h2><p className="muted">Ssenari seçdikdə müştərinin vəziyyəti və qiymətləndirmə meyarları burada görünəcək.</p></div></div><div className="form-grid"><div className="info-block"><h3>Departament</h3><span className="muted">Ssenari seçilməyib</span></div><div className="info-block"><h3>Dil</h3><strong>Azərbaycan dili</strong></div></div><section><h2>Ölçülən meyarlar</h2><p className="muted">Hər meyar 0–2 bal aralığında, transkriptdən sübutla qiymətləndirilir.</p></section></>}
