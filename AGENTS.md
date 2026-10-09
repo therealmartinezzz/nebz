@@ -20,7 +20,7 @@ NeuroBridge.SI Baku 2026 hackathonu, **AI Enterprise Solutions** bölməsi. Məh
 - Başqasının yoluna toxunma. Lazımdırsa, PR təsvirində və ya mesajla soruş.
 - `src/lib/types.ts` frontend ilə backend arasındakı müqavilədir: dəyişiklik lazımdırsa, backend edir.
 - Frontend bazaya və ya Claude-a birbaşa getmir: yalnız `src/server/queries.ts` funksiyalarını (server komponentlərində) və `/api/*` endpoint-lərini (client komponentlərində) çağırır. Müqavilə: **`docs/api.md`**.
-- Backend hələ hazır deyilsə, frontend `docs/api.md`-dəki forma ilə **müvəqqəti mock data** qurur (komponentin yanında `mock.ts`), backend hazır olanda əvəz edilir. Mock rəqəmlər real kimi göstərilmir.
+- Backend sorğuları və endpoint-ləri hazırdır (`docs/api.md`). Bazada data yoxdursa, UI boş vəziyyət göstərir — mock rəqəm göstərilmir.
 
 ## Struktur
 ```
@@ -46,18 +46,18 @@ Açarlar `.env.local` faylındadır (repoya düşmür, komandadan mesajla alın�
 ## Ekranlar və status
 Spesifikasiya və qəbul meyarları: `docs/03-mvp-scope.md`. Dizayn: `docs/design/*.dc.html` (brauzerdə aç, layout/mətn/rəngi oradan götür, faylı kodda istifadə etmə).
 
-| # | Ekran | Route | Dizayn | Status |
-|---|---|---|---|---|
-| 1 | Ssenari seçimi | `/` | Main | işlək |
-| 2 | Canlı zəng | `/call/[id]` | Call | işlək |
-| 3 | Zəng hesabatı | `/report/[id]` | Report | işlək; etiraz düyməsi + rəhbər balı yoxdur |
-| 4 | Şirkət paneli | `/dashboard` | Dashboard | yoxdur (indi sadə `/reports`) |
-| 5 | Ssenari yaradıcısı | `/scenarios/new` | Builder | yoxdur |
-| 6 | Operator profili | `/operators/[name]` | Operator | yoxdur |
-| 7 | Rəhbər yoxlaması | `/review` | Review | yoxdur — **prioritet** |
-| 8 | Məşqlərim | `/me` | Training | yoxdur |
+| # | Ekran | Route | Dizayn | Backend (data) | Frontend (UI) |
+|---|---|---|---|---|---|
+| 1 | Ssenari seçimi | `/` | Main | hazır `listScenarios` | işlək |
+| 2 | Canlı zəng | `/call/[id]` | Call | hazır `getScenario` | işlək; müştəri adı sabit "Leyla M." → `meta.customer_name`; xətada "qiymətləndirir…"-də donur |
+| 3 | Zəng hesabatı | `/report/[id]` | Report | hazır `getCallReport`, `POST /api/reviews` | işlək; etiraz düyməsi + "AI → Rəhbər" balı yoxdur |
+| 4 | Şirkət paneli | `/dashboard` | Dashboard | hazır `getDashboard` | yoxdur (indi sadə `/reports`) |
+| 5 | Ssenari yaradıcısı | `/scenarios/new` | Builder | hazır `/api/scenarios/draft`, `/api/scenarios` | yoxdur |
+| 6 | Operator profili | `/operators/[name]` | Operator | hazır `getOperatorProfile` | yoxdur |
+| 7 | Rəhbər yoxlaması | `/review` | Review | hazır `getReviewQueue`, `POST /api/reviews` | yoxdur — **prioritet** |
+| 8 | Məşqlərim | `/me?name=` | Training | hazır `getMyTraining` | yoxdur |
 
-Prioritet: 7 → 3-ə etiraz/rəhbər balı → 5 → 4 → 6 → 8.
+Prioritet (UI): 7 → 3-ə etiraz/rəhbər balı → 2-nin xəta vəziyyəti → 5 → 4 → 6 → 8. Data formaları: `docs/api.md` + `src/lib/types.ts` — mock lazım deyil, backend hazırdır.
 
 ## UI qaydaları
 - Bütün mətn **Azərbaycan dilində**. Şirkət: "NovaBank · demo".
