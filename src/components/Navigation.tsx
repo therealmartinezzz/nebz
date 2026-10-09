@@ -14,6 +14,7 @@ const links = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  if (pathname === "/landing") return null;
   const call = pathname.startsWith("/call/");
   const training = pathname === "/me";
   return <>
