@@ -1,17 +1,7 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
 import type { Criterion, CriterionScore, Line, ScoreResult } from "@/lib/types";
 import { fmtTime } from "@/lib/format";
-
-const client = new Anthropic();
-const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
-
-function textOf(res: Anthropic.Message) {
-  return res.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("");
-}
+import { complete } from "./llm";
 
 // Mətn rejimi: AI müştərinin növbəti cavabı.
 export async function customerReply(persona: string, transcript: Line[]) {
@@ -19,13 +9,12 @@ export async function customerReply(persona: string, transcript: Line[]) {
     role: l.role === "operator" ? ("user" as const) : ("assistant" as const),
     content: l.text,
   }));
-  const res = await client.messages.create({
-    model: MODEL,
-    max_tokens: 200,
+  const text = await complete({
     system: persona + "\n\nYalnız müştərinin sözlərini yaz, təsvir və ya qeyd əlavə etmə.",
     messages,
+    maxTokens: 200,
   });
-  return textOf(res).trim();
+  return text.trim();
 }
 
 const SYSTEM = `Sən çağrı mərkəzi keyfiyyət auditorusan. Sənə bank operatoru (OPERATOR) ilə müştəri (MÜŞTƏRİ) arasındakı zəngin transkripti verilir. Yalnız OPERATORU qiymətləndir.
@@ -48,17 +37,19 @@ export async function scoreCall(rubric: Criterion[], transcript: Line[]): Promis
     .map((l) => `[${fmtTime(l.t)}] ${l.role === "operator" ? "OPERATOR" : "MÜŞTƏRİ"}: ${l.text}`)
     .join("\n");
 
-  const res = await client.messages.create({
-    model: MODEL,
-    max_tokens: 2000,
+  const raw = await complete({
     system: SYSTEM,
-    messages: [
-      { role: "user", content: `MEYARLAR:\n${rubricText}\n\nTRANSKRİPT:\n${transcriptText}` },
-    ],
+    messages: [{ role: "user", content: `MEYARLAR:\n${rubricText}\n\nTRANSKRİPT:\n${transcriptText}` }],
+    maxTokens: 2000,
+    json: true,
   });
 
-  const raw = textOf(res);
-  const parsed = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
+  let parsed;
+  try {
+    parsed = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
+  } catch {
+    throw new Error("Model qiymətləndirməni düzgün formatda qaytarmadı, yenidən cəhd edin");
+  }
 
   // Modelə tam etibar etmirik: hər meyarı yoxlayır, balı 0–2 aralığına salır, cəmi özümüz hesablayırıq.
   let confidence: "high" | "low" = parsed.confidence === "low" ? "low" : "high";

@@ -27,7 +27,7 @@ NeuroBridge.SI Baku 2026 hackathonu, **AI Enterprise Solutions** bölməsi. Məh
 src/
   app/            Next.js App Router: səhifələr (frontend) + api/ (backend)
   components/     Təkrar istifadə olunan UI komponentləri (frontend)
-  server/         Yalnız serverdə: db.ts (Supabase), claude.ts (Claude), queries.ts (oxuma sorğuları)
+  server/         Yalnız serverdə: db.ts (Supabase), llm.ts (Claude/Gemini seçimi), ai.ts (AI müştəri + qiymətləndirmə), queries.ts (oxuma sorğuları)
   lib/            Ortaq, brauzerdə də işləyən kod: types.ts, format.ts
 supabase/         migrations/ (nömrə sırası ilə) + seed.sql
 docs/             Brif, qaydalar, ekran spesifikasiyaları, API müqaviləsi, design/
