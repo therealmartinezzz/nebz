@@ -11,6 +11,7 @@ const links = [
   { href: "/reports", label: "Hesabatlar", matches: ["/reports", "/report/"] },
   { href: "/review", label: "Yoxlama", matches: ["/review"] },
   { href: "/me", label: "Məşqlər", matches: ["/me"] },
+  { href: "/pricing", label: "Qiymətlər", matches: ["/pricing"] },
 ];
 
 export default function Navigation() {
