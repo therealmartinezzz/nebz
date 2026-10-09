@@ -8,7 +8,11 @@ import { EmptyState, PageHeading } from "@/components/ui";
 import { practiceHref } from "@/components/view-helpers";
 import { useErrorNotification, useNotify } from "@/components/Notifications";
 
-const customerTypes = ["Əsəbi", "Tələsən", "Çaşqın", "Yaşlı"];
+const customerTypes = [
+  "Əsəbi", "Tələsən", "Çaşqın", "Yaşlı",
+  "Sakit", "Narahat", "Şübhəçi", "Tələbkar",
+  "Danışqan", "Az danışan", "İlk dəfə müraciət edən", "Ətraflı izah istəyən",
+];
 const levels = ["0", "1", "2"] as const;
 function validDraft(value: ScenarioDraft) {
   return Boolean(value?.title?.trim() && value.summary?.trim() && value.persona_prompt?.trim() && Array.isArray(value.rubric) && value.rubric.length >= 3 && value.rubric.length <= 8 && new Set(value.rubric.map((criterion) => criterion.id)).size === value.rubric.length && value.rubric.every((criterion) => Number.isInteger(criterion.id) && criterion.name?.trim() && criterion.source?.trim() && levels.every((level) => criterion.levels?.[level]?.trim())));
@@ -66,7 +70,7 @@ export default function BuilderClient() {
     <div className="split"><form className="card stack" onSubmit={(event) => { event.preventDefault(); void generate(); }}><h2>Mənbə</h2>
       <label className="field">Xidmət standartı və ya zəng skripti<textarea rows={9} value={standard} onChange={(event) => setStandard(event.target.value)} placeholder="Standartın nömrələnmiş bəndlərini buraya yapışdırın" maxLength={30000} required disabled={Boolean(busy)} /><span className="hint">Yalnız mətn qəbul olunur. Real müştəri məlumatı daxil etməyin.</span></label>
       <div className="form-grid"><label className="field">Departament<select value={department} onChange={(event) => setDepartment(event.target.value)} disabled={Boolean(busy)}><option>Kart xidmətləri</option><option>Köçürmələr</option><option>Kreditlər</option><option>Müştəri xidmətləri</option></select></label><label className="field">Dil<select value="az" disabled><option value="az">Azərbaycan dili</option></select></label></div>
-      <fieldset disabled={Boolean(busy)}><legend>Müştəri tipi</legend><div className="chip-list">{customerTypes.map((type) => <button key={type} type="button" className="chip-button" aria-pressed={customers.includes(type)} onClick={() => setCustomers((current) => current.includes(type) ? current.filter((item) => item !== type) : [...current, type])}>{type}</button>)}</div></fieldset>
+      <fieldset disabled={Boolean(busy)}><legend>Müştəri tipi</legend><p className="muted small" style={{ marginBottom: 10 }}>Bir neçə xüsusiyyəti birlikdə seçə bilərsiniz.</p><div className="chip-list">{customerTypes.map((type) => <button key={type} type="button" className="chip-button" aria-pressed={customers.includes(type)} onClick={() => setCustomers((current) => current.includes(type) ? current.filter((item) => item !== type) : [...current, type])}>{type}</button>)}</div></fieldset>
       <fieldset disabled={Boolean(busy)}><legend>Çətinlik</legend><div className="score-options">{[{ value: "low", label: "Aşağı" }, { value: "medium", label: "Orta" }, { value: "high", label: "Yüksək" }].map((item) => <label key={item.value}><input type="radio" name="difficulty" value={item.value} checked={difficulty === item.value} onChange={() => setDifficulty(item.value)} />{item.label}</label>)}</div></fieldset>
       <button className="btn primary full" type="submit" aria-busy={busy === "generate"} disabled={Boolean(busy) || !standard.trim() || !customers.length}>{busy === "generate" ? "AI qaralama hazırlayır…" : draft ? "AI ilə yenidən yarat" : "AI qaralaması yarat"}</button>
     </form><div className="stack">
