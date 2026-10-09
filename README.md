@@ -55,6 +55,7 @@ npm run test:integration  # real Supabase + mock model: zəng → hesabat → et
 - Git axını: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Frontend ↔ backend müqaviləsi: [`docs/api.md`](docs/api.md)
 - Ekranlar və qəbul meyarları: [`docs/03-mvp-scope.md`](docs/03-mvp-scope.md)
+- Səkkiz React ekranı, route-lar və frontend inteqrasiyasının statusu: [`docs/frontend.md`](docs/frontend.md)
 
 ## Açıqlama (hackathon qaydası)
 
