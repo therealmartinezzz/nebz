@@ -7,7 +7,7 @@ Dizayn faylları: `docs/design/` (ekran nömrələri eynidir). Data modeli: `sup
 |---|---|---|---|---|
 | 1 | Ssenari seçimi | `Main.dc.html` | ✅ `src/app/page.tsx` | işlək |
 | 2 | Canlı zəng | `Call.dc.html` | ✅ `src/app/call/[id]/` | işlək (səs test olunmalıdır) |
-| 3 | Zəng hesabatı | `Report.dc.html` | ✅ `src/app/report/[id]/` | işlək |
+| 3 | Zəng hesabatı | `Report.dc.html` | ✅ `src/app/report/[id]/` | işlək (etiraz UI yoxdur) |
 | 4 | Şirkət paneli | `Dashboard.dc.html` | ⬜ (sadə siyahı: `src/app/reports/`) | real test datası ilə |
 | 5 | Ssenari yaradıcısı | `Builder.dc.html` | ⬜ | sadə versiya |
 | 6 | Operator profili | `Operator.dc.html` | ⬜ | data varsa |

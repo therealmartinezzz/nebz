@@ -42,7 +42,16 @@ docs/             brif, hackathon qaydaları, ekran spesifikasiyaları, API müq
 
 Qiymətləndirmədə modelə tam etibar edilmir: hər meyar yoxlanılır, bal 0–2 aralığına salınır, cəm serverdə hesablanır. Meyar çatışmırsa və ya transkript çox qısadırsa, etibarlılıq "aşağı" olur.
 
+## Testlər
+
+```
+npm test                  # unit: model cavablarının yoxlanması, ssenari validasiyası, provayder seçimi (açar lazım deyil)
+npm run test:integration  # real Supabase + mock model: zəng → hesabat → etiraz → rəhbər → növbə → panel → metrika → eksport → ssenari yaradıcısı
+```
+İnteqrasiya testi `.env.local`-dakı bazaya yazır və yaratdığı datanı (`TEST-*` operatorları, test ssenariləri) sonda silir. Real model çağırılmır.
+
 ## Komanda üçün
+- **Vəziyyət və büdcə planı (checkpoint):** [`docs/08-checkpoint-and-budget.md`](docs/08-checkpoint-and-budget.md)
 - Agent/komanda qaydaları: [`AGENTS.md`](AGENTS.md) (Codex və Claude Code bunu oxuyur)
 - Git axını: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Frontend ↔ backend müqaviləsi: [`docs/api.md`](docs/api.md)
@@ -52,7 +61,7 @@ Qiymətləndirmədə modelə tam etibar edilmir: hər meyar yoxlanılır, bal 0�
 ## Açıqlama (hackathon qaydası)
 
 **Modellər:** Claude Sonnet 5.5 (Anthropic) və ya Gemini 3.8 Flash (Google) — qiymətləndirmə və mətn rejimində müştəri (`LLM_PROVIDER` ilə seçilir; demoda hansının işlədiyi təhvildə qeyd olunur); OpenAI gpt-realtime + gpt-4o-transcribe — səsli rejim.
-**Kitabxanalar:** Next.js, React, TypeScript, @supabase/supabase-js, @anthropic-ai/sdk, @google/genai, server-only.
+**Kitabxanalar:** Next.js, React, TypeScript, @supabase/supabase-js, @anthropic-ai/sdk, @google/genai, server-only. Yalnız inkişaf üçün: Vitest (testlər), pg (miqrasiya skripti).
 **Xidmətlər:** Supabase (Postgres), Vercel (hostinq).
 **Şrift:** IBM Plex Sans / Mono (Google Fonts).
 **Data:** sintetik ssenari; real şəxsi məlumat yoxdur.
