@@ -11,43 +11,10 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <div className="landing-root">
-      {/* ── Üst Naviqasiya (Landing Header) ── */}
-      <header className="landing-nav-bar">
-        <div className="landing-nav-inner">
-          <Link href="/landing" className="brand" aria-label="Nəbz Ana Səhifə">
-            <span className="brand-mark">
-              <Icon name="pulse" width="17" height="17" />
-            </span>
-            <span>Nəbz</span>
-            <span className="brand-caption">xidmət keyfiyyəti</span>
-          </Link>
-
-          <nav className="landing-menu" aria-label="Landing naviqasiyası">
-            <a href="#nece-isleyir">Necə işləyir?</a>
-            <a href="#prinsipler">Prinsiplər</a>
-            <a href="#imkanlar">İmkanlar</a>
-            <Link href="/dashboard">Panel</Link>
-          </nav>
-
-          <div className="landing-nav-actions">
-            <span className="company">NovaBank · demo</span>
-            <Link href="/" className="btn primary landing-nav-btn">
-              <Icon name="phone" width="16" height="16" />
-              <span>Məşqə başla</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* ── Hero Bölməsi ── */}
       <section className="landing-hero-wrap">
         <div className="landing-hero-container">
           <div className="landing-hero-text">
-            <div className="landing-pill-tag">
-              <span className="landing-tag-pulse" />
-              <span>NeuroBridge.SI · Baku 2026 Enterprise Həlli</span>
-            </div>
-
             <h1 className="landing-main-title">
               Şirkətlər xidmət keyfiyyətini <span className="highlight-ink">şikayət gələndə</span> deyil, <span className="highlight-accent">hər gün</span> ölçür.
             </h1>
