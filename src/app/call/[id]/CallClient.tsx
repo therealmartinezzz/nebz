@@ -125,7 +125,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
   const textLimitReached = mode === 'text' && lines.filter(line => line.role === 'operator').length >= 5;
 
   return <main id="main-content" className="page">
-    <div className="page-heading"><div><h1>{title}</h1><p className="muted">{department && `${department} · `}{mode === "voice" ? "Səsli məşq" : "Mətn məşqi"} · Operator: {operatorName}</p></div><Link href="/" className="back-link"><Icon name="arrow" width="16" height="16" />Ssenarilər</Link></div>
+    <div className="page-heading"><div><h1>{title}</h1><p className="muted">{department && `${department} · `}{mode === "voice" ? "Səsli məşq" : "Mətn məşqi"} · Operator: {operatorName}</p></div><Link href="/scenarios" className="back-link"><Icon name="arrow" width="16" height="16" />Ssenarilər</Link></div>
     <DataNotice error={initialError} />
     <div className="call-layout">
       <section className="callpanel" aria-label="Zəngin idarə edilməsi">
@@ -139,7 +139,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
         {live && <div className="call-controls">{mode === "voice" && <button type="button" className="icon-button" onClick={toggleMute} aria-label={muted ? "Mikrofonu aç" : "Mikrofonu bağla"} aria-pressed={muted}><Icon name={muted ? "mic-off" : "mic"} width="24" height="24" /></button>}<button type="button" className="icon-button end" aria-label="Zəngi bitir və qiymətləndir" title="Zəngi bitir və qiymətləndir" onClick={() => void endCall()} disabled={!hasEnoughTranscript || waiting}><Icon name="hangup" width="24" height="24" /></button></div>}
         {live && !hasEnoughTranscript && <p className="muted small">Qiymətləndirmə üçün ən azı 2 operator replikası lazımdır.</p>}
         {live && mode === 'text' && <p className="muted small">Demo məşqi maksimum 5 operator replikasıdır.{textLimitReached && ' Məşqi bitirib nəticəni görün.'}</p>}
-        {status === "ended" && <><button className="btn primary" onClick={() => void endCall()} disabled={!hasEnoughTranscript}>Saxla və qiymətləndir</button><Link className="btn" href="/">Yeni məşq seç</Link></>}
+        {status === "ended" && <><button className="btn primary" onClick={() => void endCall()} disabled={!hasEnoughTranscript}>Saxla və qiymətləndir</button><Link className="btn" href="/scenarios">Yeni məşq seç</Link></>}
         {status === "error" && <><button className="btn primary" onClick={startVoice} disabled={!available}>Səs bağlantısını yenidən qur</button><Link className="btn" href={practiceHref(scenarioId, operatorName, "text")}>Mətn rejiminə keç</Link></>}
         {mode === "voice" && <p className="muted small">Demo zəngi maksimum {fmtTime(voiceLimit || 60)} · Operator replikaları: {voiceTurns}/10</p>}
       </section>

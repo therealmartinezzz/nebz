@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import Icon from "./Icon";
 
 const links = [
-  { href: "/landing", label: "Ana səhifə", matches: ["/landing"] },
+  { href: "/", label: "Ana səhifə", matches: ["/landing"] },
   { href: "/dashboard", label: "Panel", matches: ["/dashboard", "/operators"] },
-  { href: "/", label: "Ssenarilər", matches: ["/scenarios"] },
+  { href: "/scenarios", label: "Ssenarilər", matches: ["/scenarios"] },
   { href: "/reports", label: "Hesabatlar", matches: ["/reports", "/report/"] },
   { href: "/review", label: "Yoxlama", matches: ["/review"] },
   { href: "/me", label: "Məşqlər", matches: ["/me"] },
@@ -20,7 +20,7 @@ export default function Navigation() {
   return <>
     <a className="skip-link" href="#main-content">Əsas məzmuna keç</a>
     <header className={`topbar${call ? " compact" : ""}`}>
-      <Link href="/landing" className="brand" aria-label="Nəbz — ana səhifə">
+      <Link href="/" className="brand" aria-label="Nəbz — ana səhifə">
         <img
           src="/brand/nebz-symbol.svg"
           alt="Nəbz loqosu"

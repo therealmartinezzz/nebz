@@ -26,7 +26,7 @@ const PLANS: {
       "AI qiymətləndirməsi: hər bal operatorun dəqiq sözləri ilə",
       "Hər zəng üçün hesabat",
     ],
-    cta: { label: "Başla", href: "/" },
+    cta: { label: "Başla", href: "/scenarios" },
   },
   {
     name: "Komanda",
@@ -40,7 +40,7 @@ const PLANS: {
       "Operator profilləri və məşq təyinatı",
       "Komanda paneli",
     ],
-    cta: { label: "Başla", href: "/" },
+    cta: { label: "Başla", href: "/scenarios" },
     featured: true,
   },
   {

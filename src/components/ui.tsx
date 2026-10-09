@@ -24,7 +24,7 @@ export function BarList({ items, empty = "Qiymətləndirilmiş zənglər olduqda
   return <div className="bar-list">{items.map((item) => <div className={`bar-item${item.value === min && items.length > 1 ? " weakest" : ""}`} key={item.label}><span>{item.label}</span><div className="bar-track"><div style={{ width: `${Math.max(0, Math.min(100, item.value / item.max * 100))}%` }} /></div><span className="mono">{number(item.value)}</span></div>)}</div>;
 }
 export function CallsTable({ calls, profileLinks = false }: { calls: CallListItem[]; profileLinks?: boolean }) {
-  if (!calls.length) return <EmptyState title="Hələ zəng yoxdur" description="İlk məşq zəngini tamamladıqdan sonra hesabatlar burada görünəcək." action={<Link className="btn" href="/">Ssenari seç</Link>} />;
+  if (!calls.length) return <EmptyState title="Hələ zəng yoxdur" description="İlk məşq zəngini tamamladıqdan sonra hesabatlar burada görünəcək." action={<Link className="btn" href="/scenarios">Ssenari seç</Link>} />;
   return <table className="data-table"><caption className="sr-only">Qiymətləndirilmiş zənglər</caption><thead><tr><th>Operator</th><th>Ssenari</th><th>Tarix</th><th>Müddət</th><th>Etibarlılıq</th><th className="text-right">Bal</th></tr></thead><tbody>{calls.map((call) => <tr key={call.id}>
     <td data-label="Operator"><Link className="strong-link" href={profileLinks ? `/operators/${encodeURIComponent(call.operator_name)}` : `/report/${call.id}`}>{call.operator_name}</Link></td>
     <td data-label="Ssenari"><Link className="plain-link" href={`/report/${call.id}`}>{call.scenarios?.title ?? "Ssenari yoxdur"}</Link></td>

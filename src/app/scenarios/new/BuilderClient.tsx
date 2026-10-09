@@ -53,7 +53,7 @@ export default function BuilderClient() {
       const result = await postJSON<{ id: string }>("/api/scenarios", { ...draft, persona_prompt: [draft.persona_prompt, additions].filter(Boolean).join("\n\n"), department });
       if (!result.id) throw new Error("Ssenarinin saxlanması təsdiqlənmədi. Yenidən cəhd edin.");
       notify({ tone: "success", title: "Ssenari saxlanıldı", description: test ? "Sınaq zəngi açılır." : "Yeni ssenari siyahıya əlavə edildi." });
-      router.push(test ? practiceHref(result.id, operatorName.trim()) : "/"); router.refresh();
+      router.push(test ? practiceHref(result.id, operatorName.trim()) : "/scenarios"); router.refresh();
     } catch (e) { setError(e instanceof Error ? e.message : "Ssenari saxlanılmadı."); }
     finally { setBusy(null); }
   }

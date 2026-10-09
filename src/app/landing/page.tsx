@@ -27,7 +27,7 @@ export default function LandingPage() {
             </p>
 
             <div className="landing-actions-group">
-              <Link href="/" className="btn primary landing-btn-cta">
+              <Link href="/scenarios" className="btn primary landing-btn-cta">
                 <Icon name="phone" width="18" height="18" />
                 <span>Canlı məşqə başla</span>
               </Link>
@@ -369,7 +369,7 @@ export default function LandingPage() {
           </p>
 
           <div className="banner-actions">
-            <Link href="/" className="btn landing-btn-white">
+            <Link href="/scenarios" className="btn landing-btn-white">
               <Icon name="phone" width="18" height="18" />
               <span>İlk məşq zəngini başlat</span>
             </Link>
@@ -398,7 +398,7 @@ export default function LandingPage() {
           </div>
 
           <div className="footer-links">
-            <Link href="/" className="plain-link small">Ssenarilər</Link>
+            <Link href="/scenarios" className="plain-link small">Ssenarilər</Link>
             <Link href="/dashboard" className="plain-link small">Panel</Link>
             <Link href="/review" className="plain-link small">Rəhbər Yoxlaması</Link>
             <Link href="/me" className="plain-link small">Məşqlərim</Link>
