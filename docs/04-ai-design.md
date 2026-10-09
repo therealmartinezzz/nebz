@@ -23,10 +23,10 @@ Mənbə həqiqəti: `supabase/seed.sql`.
 ## AI müştəri
 - Prompt: `scenarios.persona_prompt` (`supabase/seed.sql`). Əsas qaydalar: rolundan çıxmır, operatorun ilk sözünü gözləyir, 1–2 cümlə danışır, yoxlamaya bir dəfə etiraz edir, empatiyaya görə sakitləşir, yalnız Azərbaycan dilində.
 - Səsli rejim: OpenAI Realtime (WebRTC), `src/app/api/realtime-session` + `CallClient.tsx`. Transkript: `gpt-4o-transcribe`. Növbə item_id ilə saxlanılır ki, gec gələn transkript sıranı pozmasın.
-- Mətn rejimi (ehtiyat): Claude eyni persona ilə, `src/app/api/customer-reply`.
+- Mətn rejimi (ehtiyat): eyni mətn modeli (Claude və ya Gemini) eyni persona ilə, `src/app/api/customer-reply`.
 
 ## Qiymətləndirici
-- Kod: `src/server/claude.ts` → `scoreCall()`. Model: `CLAUDE_MODEL` (default `claude-sonnet-5-5`).
+- Kod: `src/server/ai.ts` → `scoreCall()`. Model: `src/server/llm.ts` — `LLM_PROVIDER=claude` (`claude-sonnet-5-5`) və ya `gemini` (`gemini-3.8-flash`).
 - Qaydalar: yalnız operator qiymətləndirilir; hər bal üçün vaxtla dəqiq sitat; emosiya/xarakter haqqında nəticə yoxdur; qeyri-müəyyənlikdə `confidence: low`; yalnız JSON.
 - **Server tərəfi yoxlama:** hər meyar mövcuddur, bal 0–2 aralığına salınır, cəm serverdə hesablanır; çatışmayan meyar və ya 2-dən az operator replikası → etibarlılıq "aşağı".
 

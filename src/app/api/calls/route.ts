@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { scoreCall } from "@/server/claude";
+import { scoreCall } from "@/server/ai";
 import type { Line, Scenario } from "@/lib/types";
 
 // Zəng bitəndə: transkripti qiymətləndirir və hamısını bazaya yazır.
@@ -21,7 +21,14 @@ export async function POST(req: Request) {
   const { data: scenario } = await supa.from("scenarios").select("*").eq("id", body.scenarioId).single<Scenario>();
   if (!scenario) return NextResponse.json({ error: "Ssenari tapılmadı" }, { status: 404 });
 
-  const result = await scoreCall(scenario.rubric, transcript);
+  let result;
+  try {
+    result = await scoreCall(scenario.rubric, transcript);
+  } catch (e) {
+    console.error("scoreCall", e);
+    const msg = e instanceof Error && e.message.startsWith("Model") ? e.message : "Qiymətləndirmə alınmadı, yenidən cəhd edin";
+    return NextResponse.json({ error: msg }, { status: 502 });
+  }
 
   const { data: call, error } = await supa
     .from("calls")
@@ -42,6 +49,10 @@ export async function POST(req: Request) {
     .single();
   if (error || !call) return NextResponse.json({ error: error?.message || "Yazma xətası" }, { status: 500 });
 
-  await supa.from("scores").insert(result.scores.map((s) => ({ ...s, call_id: call.id })));
+  const { error: scoresError } = await supa.from("scores").insert(result.scores.map((s) => ({ ...s, call_id: call.id })));
+  if (scoresError) {
+    await supa.from("calls").delete().eq("id", call.id); // yarımçıq hesabat qalmasın
+    return NextResponse.json({ error: scoresError.message }, { status: 500 });
+  }
   return NextResponse.json({ id: call.id });
 }
