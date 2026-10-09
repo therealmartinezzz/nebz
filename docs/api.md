@@ -56,6 +56,11 @@ Model sorğuları: `429` — kvota limiti; `503` — açar/konfiqurasiya və ya 
 `{ scenarioId, operatorName, mode: "voice"|"text", transcript: Line[], durationSec }` → `{ id }` → `/report/{id}`.
 Model xətası → **502** + mesaj (ekran "qiymətləndirir…"-də qalmamalıdır, xətanı göstər və yenidən cəhd düyməsi ver).
 
+### `POST /api/calls/{id}/score` — hazır
+Saxlanılmış, amma qiymətləndirilməmiş zəngi (yenidən) qiymətləndirir → `{ id, scored: true }`; xəta → 4xx/5xx + mesaj, zəng `failed` qalır. Artıq qiymətləndirilibsə model çağırılmır.
+
+**Zəng statusu (`calls.status`, 0004):** `pending` → `scored` | `failed`. `POST /api/calls` əvvəlcə transkripti saxlayır, sonra qiymətləndirir və **həmişə 200** qaytarır: `{ id, scored: true }` və ya `{ id, scored: false, error }` — hər iki halda `/report/{id}` açılır. Qiymətləndirilməmiş zəngdə `total`, `max_total`, `confidence`, `final_total` = `null`, `scores` = `[]`. Ortalamalar (panel, profil, metrikalar) yalnız `scored` zənglərdən; siyahılar hamısını göstərir. Operator profilində zəng statusu `review_status`: `unscored | ai | reviewed | disputed`.
+
 ### `POST /api/reviews` — hazır (ekran 7 və 3)
 ```ts
 { scoreId: string; kind: "manager" | "dispute"; newScore?: 0|1|2; comment?: string } → { id }

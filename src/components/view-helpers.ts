@@ -7,7 +7,8 @@ export function decodeRouteName(value: string) {
   try { return decodeURIComponent(value); }
   catch { return value; }
 }
-export const resultPercent = (call: Pick<CallListItem, "total" | "max_total">) => call.max_total > 0 ? call.total / call.max_total * 100 : null;
+// Qiymətləndirilməmiş zəng (total/max_total null) ortalamaya düşmür.
+export const resultPercent = (call: Pick<CallListItem, "total" | "max_total">) => call.total !== null && call.max_total ? call.total / call.max_total * 100 : null;
 export function averageResult(calls: CallListItem[]) {
   const values = calls.map(resultPercent).filter((value): value is number => value !== null);
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;

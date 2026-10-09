@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI, Modality } from "@google/genai";
+import { EndSensitivity, GoogleGenAI, Modality, StartSensitivity } from "@google/genai";
 import { db } from "@/server/db";
 import { fail, isUuid, modelFailure, readJson } from "@/server/http";
 import { reserveDemo, withDemoRequest } from '@/server/demo-budget';
 
 export const runtime = "nodejs";
+
+const BANK_VOCABULARY = ["NovaBank", "kart", "bloklanıb", "şəxsiyyət", "doğum tarixi", "son dörd rəqəm", "əməliyyat", "mobil tətbiq", "müştəri xidmətləri", "üzr istəyirəm"];
 
 // Əsas açar serverdə qalır; token bir ssenari və bir qısa səs sessiyası üçündür.
 export async function POST(req: Request) {
@@ -34,8 +36,18 @@ export async function POST(req: Request) {
           config: {
             responseModalities: [Modality.AUDIO],
             systemInstruction: scenario.persona_prompt + "\nYalnız Azərbaycan dilində danış. Operatorun ilk sözünü gözlə. Bu 60 saniyəlik qısa məşqdir. Hər dəfə yalnız bir qısa cümlə ilə cavab ver, uzun izah vermə.",
-            inputAudioTranscription: {},
-            outputAudioTranscription: {},
+            // Dil göstərilməsə avtomatik aşkarlama Azərbaycan nitqini türk/yapon/ispan kimi yazır.
+            inputAudioTranscription: { languageCodes: ["az"], customVocabulary: BANK_VOCABULARY },
+            outputAudioTranscription: { languageCodes: ["az"] },
+            // Səs-küy və müştərinin öz səsinin əks-sədası onun sözünü kəsməsin.
+            realtimeInputConfig: {
+              automaticActivityDetection: {
+                startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_LOW,
+                endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
+                prefixPaddingMs: 300,
+                silenceDurationMs: 800,
+              },
+            },
             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
           },
         },

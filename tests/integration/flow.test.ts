@@ -9,13 +9,26 @@ vi.mock("@/server/llm", async (orig) => ({
   complete: (...a: unknown[]) => complete(...a),
 }));
 
-const hasDb = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+// withDemoRequest() Next-in cookies() funksiyasını çağırır — test mühitində sorğu konteksti yoxdur.
+// Model mock-landığı üçün demo büdcəsinə heç nə yazılmır (reserveDemo yalnız real complete()-dən çağırılır).
+vi.mock("next/headers", () => {
+  const jar = new Map<string, string>();
+  return {
+    cookies: async () => ({
+      get: (name: string) => (jar.has(name) ? { name, value: jar.get(name)! } : undefined),
+      set: (name: string, value: string) => void jar.set(name, value),
+    }),
+  };
+});
+
+const hasDb =!!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
 const OP = `TEST-${Date.now()}`;
 const MISSING = "00000000-0000-4000-8000-000000000000";
 
 const { db } = await import("@/server/db");
 const q = await import("@/server/queries");
 const calls = await import("@/app/api/calls/route");
+const rescore = await import("@/app/api/calls/[id]/score/route");
 const reviews = await import("@/app/api/reviews/route");
 const reply = await import("@/app/api/customer-reply/route");
 const realtime = await import("@/app/api/realtime-session/route");
@@ -117,7 +130,8 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       call1 = r.body.id;
 
       const rep = await report(call1);
-      expect(rep.call).toMatchObject({ operator_name: OP, mode: "text", total: 10, max_total: 12, duration_sec: 72, confidence: "high" });
+      expect(r.body).toEqual({ id: call1, scored: true });
+      expect(rep.call).toMatchObject({ operator_name: OP, mode: "text", status: "scored", scoring_error: null, total: 10, max_total: 12, duration_sec: 72, confidence: "high" });
       expect(rep.call.model).toMatch(/^(claude|gemini):/);
       expect(typeof rep.call.scoring_ms).toBe("number");
       expect(rep.call.scenarios?.title).toBe("Bloklanmış kart");
@@ -139,23 +153,56 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect(rep.call).toMatchObject({ mode: "voice", confidence: "low", confidence_reason: "01:12-də aydın deyil" });
     });
 
-    it("model pozuk cavab versə 502 + mesaj, bazaya heç nə yazılmır", async () => {
+    it("model xətasında söhbət İTMİR: failed statusu ilə saxlanılır, sonra yenidən qiymətləndirilir", async () => {
       const before = (await q.getOperatorProfile(OP))!.call_count;
-      complete.mockResolvedValue("qiymətləndirə bilmirəm");
-      const r = await json(await calls.POST(post({ scenarioId: scenario.id, operatorName: OP, mode: "text", transcript, durationSec: 10 })));
-      expect(r.status).toBe(502);
-      expect(r.body.error).toMatch(/^Model qiymətləndirməni/);
-
-      complete.mockRejectedValue(new Error("network down"));
-      const r2 = await json(await calls.POST(post({ scenarioId: scenario.id, operatorName: OP, mode: "text", transcript, durationSec: 10 })));
-      expect(r2.status).toBe(502);
-      expect(r2.body.error).toBe("Qiymətləndirmə alınmadı, yenidən cəhd edin");
-
+      const failedIds: string[] = [];
       const { LlmConfigError } = await import("@/server/llm");
-      complete.mockRejectedValue(new LlmConfigError("AI modeli qoşulmayıb: GEMINI_API_KEY təyin edilməyib"));
-      const r3 = await json(await calls.POST(post({ scenarioId: scenario.id, operatorName: OP, mode: "text", transcript, durationSec: 10 })));
-      expect(r3).toEqual({ status: 503, body: { error: "AI modeli qoşulmayıb: GEMINI_API_KEY təyin edilməyib" } });
-      expect((await q.getOperatorProfile(OP))!.call_count).toBe(before);
+      const cases: [() => void, RegExp][] = [
+        [() => complete.mockResolvedValue("qiymətləndirə bilmirəm"), /^Model qiymətləndirməni/],
+        [() => complete.mockRejectedValue(new Error("network down")), /^Qiymətləndirmə alınmadı, yenidən cəhd edin$/],
+        [() => complete.mockRejectedValue(new LlmConfigError("AI modeli qoşulmayıb: GEMINI_API_KEY təyin edilməyib")), /GEMINI_API_KEY/],
+      ];
+      for (const [arrange, msg] of cases) {
+        arrange();
+        const r = await json(await calls.POST(post({ scenarioId: scenario.id, operatorName: OP, mode: "voice", transcript, durationSec: 40 })));
+        expect(r.status).toBe(200);
+        expect(r.body).toMatchObject({ scored: false, error: expect.stringMatching(msg) });
+        failedIds.push(r.body.id);
+        const rep = await report(r.body.id);
+        expect(rep.call).toMatchObject({ status: "failed", total: null, max_total: null, mode: "voice", duration_sec: 40 });
+        expect(rep.call.scoring_error).toMatch(msg);
+        expect(rep.call.transcript).toHaveLength(6); // transkript bazadadır
+        expect(rep.scores).toEqual([]);
+        expect(rep.final_total).toBeNull();
+      }
+      // Ortalamalara düşmür, amma siyahılarda görünür.
+      const prof = (await q.getOperatorProfile(OP))!;
+      expect(prof.call_count).toBe(before);
+      expect(prof.calls.filter((c) => failedIds.includes(c.id)).map((c) => c.review_status)).toEqual(["unscored", "unscored", "unscored"]);
+      expect((await q.listCalls()).find((c) => c.id === failedIds[0])).toMatchObject({ status: "failed", total: null, final_total: null });
+      expect((await q.getReviewQueue()).some((i) => failedIds.includes(i.call.id))).toBe(false);
+
+      // POST /api/calls/{id}/score — yenidən qiymətləndirmə.
+      complete.mockResolvedValue(scoring([2, 2, 2, 2, 2, 1]));
+      const again = await json(await rescore.POST(post({}), { params: Promise.resolve({ id: failedIds[0] }) }));
+      expect(again).toEqual({ status: 200, body: { id: failedIds[0], scored: true } });
+      const rep = await report(failedIds[0]);
+      expect(rep.call).toMatchObject({ status: "scored", scoring_error: null, total: 11, max_total: 12 });
+      expect(rep.scores).toHaveLength(6);
+      // Artıq qiymətləndirilib — təkrar çağırış modeli çağırmır, ballar dublikat olmur.
+      complete.mockClear();
+      expect((await json(await rescore.POST(post({}), { params: Promise.resolve({ id: failedIds[0] }) }))).body.scored).toBe(true);
+      expect(complete).not.toHaveBeenCalled();
+      expect((await report(failedIds[0])).scores).toHaveLength(6);
+      // Uğursuz yenidən cəhd → 502 + failed qalır.
+      complete.mockResolvedValue("pozuq");
+      expect((await json(await rescore.POST(post({}), { params: Promise.resolve({ id: failedIds[1] }) }))).status).toBe(502);
+      expect((await report(failedIds[1])).call.status).toBe("failed");
+      expect((await json(await rescore.POST(post({}), { params: Promise.resolve({ id: MISSING }) }))).status).toBe(404);
+      expect((await json(await rescore.POST(post({}), { params: Promise.resolve({ id: "x" }) }))).status).toBe(400);
+
+      // Sonrakı testlərin sayları sabit qalsın.
+      await db().from("calls").delete().in("id", failedIds);
     });
   });
 
@@ -216,7 +263,7 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect(item.transcript_excerpt.some((l) => l.t === 64)).toBe(true);
 
       const prof = await q.getOperatorProfile(OP);
-      expect(prof!.calls.find((c) => c.id === call1)?.status).toBe("disputed");
+      expect(prof!.calls.find((c) => c.id === call1)?.review_status).toBe("disputed");
     });
 
     it("rəhbər balı dəyişir → hesabatda AI: 0 → Rəhbər: 2, etiraz bağlanır", async () => {
@@ -230,7 +277,7 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect(rep).toMatchObject({ final_total: 12, reviewed: true });
       expect(rep.call.total).toBe(10); // AI cəmi dəyişmir
       expect((await q.getReviewQueue()).some((i) => i.call.id === call1)).toBe(false);
-      expect((await q.getOperatorProfile(OP))!.calls.find((c) => c.id === call1)?.status).toBe("reviewed");
+      expect((await q.getOperatorProfile(OP))!.calls.find((c) => c.id === call1)?.review_status).toBe("reviewed");
     });
 
     it("rəhbər qərarından SONRA yeni etiraz yenidən açılır", async () => {
@@ -343,8 +390,10 @@ describe.skipIf(!hasDb)("backend axını (real baza, mock model)", () => {
       expect((await json(await reply.POST(post({ scenarioId: MISSING, transcript })))).status).toBe(404);
     });
 
-    it.skipIf(!!process.env.OPENAI_API_KEY)("səs açarı yoxdursa 503 + mətn rejimi mesajı", async () => {
+    it("səs açarı yoxdursa 503 + mətn rejimi mesajı (real Gemini-yə getmir)", async () => {
+      vi.stubEnv("GEMINI_API_KEY", "");
       const r = await json(await realtime.POST(post({ scenarioId: scenario.id })));
+      vi.unstubAllEnvs();
       expect(r.status).toBe(503);
       expect(r.body.error).toMatch(/mətn rejimi/);
     });

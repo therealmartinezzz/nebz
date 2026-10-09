@@ -24,7 +24,7 @@ import type {
 
 const SCENARIO_COLS = "id,title,department,summary,rubric,meta";
 const CALL_COLS =
-  "id, scenario_id, operator_name, mode, transcript, duration_sec, total, max_total, strengths, improvements, training_recommendation, confidence, confidence_reason, model, scoring_ms, created_at, scenarios(title, department)";
+  "id, scenario_id, operator_name, mode, transcript, duration_sec, status, scoring_error, total, max_total, strengths, improvements, training_recommendation, confidence, confidence_reason, model, scoring_ms, created_at, scenarios(title, department)";
 const MAX_CALLS = 500;
 
 function must<T>(res: { data: T | null; error: { message: string } | null }): T {
@@ -68,10 +68,13 @@ async function scoresFor(callIds: string[]): Promise<Map<string, ScoreWithReview
   return map;
 }
 
-const finalTotal = (scores: ScoreWithReviews[] | undefined, fallback: number) =>
+const finalTotal = <F extends number | null>(scores: ScoreWithReviews[] | undefined, fallback: F) =>
   scores?.length ? scores.reduce((a, s) => a + s.final_score, 0) : fallback;
 
-type ListItem = CallListItem & { final_total: number };
+type ListItem = CallListItem & { final_total: number | null };
+/** Qiymətləndirilmiş zəng: ballar var. Ortalamalar yalnız bunlardan hesablanır. */
+type ScoredCall = CallRow & { total: number; max_total: number };
+const isScored = (c: CallRow): c is ScoredCall => c.status === "scored" && c.total !== null && c.max_total !== null;
 
 function toListItem(c: CallRow, scores: ScoreWithReviews[] | undefined): ListItem {
   return {
@@ -83,8 +86,9 @@ function toListItem(c: CallRow, scores: ScoreWithReviews[] | undefined): ListIte
     duration_sec: c.duration_sec,
     created_at: c.created_at,
     mode: c.mode,
+    status: c.status,
     scenarios: c.scenarios,
-    final_total: finalTotal(scores, c.total),
+    final_total: isScored(c) ? finalTotal(scores, c.total) : null,
   };
 }
 
@@ -93,7 +97,7 @@ async function loadCalls(filter?: { operator?: string }) {
   if (filter?.operator) q = q.eq("operator_name", filter.operator);
   const calls = must(await q) as unknown as CallRow[];
   const scores = await scoresFor(calls.map((c) => c.id));
-  return { calls, scores };
+  return { calls, scored: calls.filter(isScored), scores };
 }
 
 function criterionAverages(lists: ScoreWithReviews[][]): CriterionAvg[] {
@@ -218,8 +222,8 @@ function buildQueue(calls: CallRow[], scores: Map<string, ScoreWithReviews[]>): 
 }
 
 export async function getReviewQueue(): Promise<ReviewItem[]> {
-  const { calls, scores } = await loadCalls();
-  return buildQueue(calls, scores);
+  const { scored, scores } = await loadCalls();
+  return buildQueue(scored, scores);
 }
 
 // ---------------------------------------------------------------------------
@@ -227,22 +231,23 @@ export async function getReviewQueue(): Promise<ReviewItem[]> {
 // ---------------------------------------------------------------------------
 
 export async function getDashboard(): Promise<DashboardStats> {
-  const { calls, scores } = await loadCalls();
+  const { calls, scored, scores } = await loadCalls();
   const items = calls.map((c) => toListItem(c, scores.get(c.id)));
+  const totals = scored.map((c) => finalTotal(scores.get(c.id), c.total));
 
   const byDept = new Map<string, number[]>();
-  items.forEach((i) => {
-    const d = i.scenarios?.department ?? "—";
-    byDept.set(d, [...(byDept.get(d) ?? []), i.final_total]);
+  scored.forEach((c, i) => {
+    const d = c.scenarios?.department ?? "—";
+    byDept.set(d, [...(byDept.get(d) ?? []), totals[i]]);
   });
 
   return {
-    call_count: calls.length,
-    avg_total: avg(items.map((i) => i.final_total)),
-    max_total: modeOf(calls.map((c) => c.max_total)),
-    low_confidence_count: calls.filter((c) => c.confidence === "low").length,
-    open_review_count: buildQueue(calls, scores).length,
-    by_criterion: criterionAverages(calls.map((c) => scores.get(c.id) ?? [])),
+    call_count: scored.length,
+    avg_total: avg(totals),
+    max_total: modeOf(scored.map((c) => c.max_total)),
+    low_confidence_count: scored.filter((c) => c.confidence === "low").length,
+    open_review_count: buildQueue(scored, scores).length,
+    by_criterion: criterionAverages(scored.map((c) => scores.get(c.id) ?? [])),
     by_department: [...byDept.entries()]
       .map(([department, totals]) => ({ department, avg_total: avg(totals)!, call_count: totals.length }))
       .sort((a, b) => b.call_count - a.call_count),
@@ -264,23 +269,25 @@ export async function listOperators(): Promise<{ name: string; call_count: numbe
 }
 
 export async function getOperatorProfile(name: string): Promise<OperatorProfile | null> {
-  const { calls, scores } = await loadCalls({ operator: name });
+  const { calls, scored, scores } = await loadCalls({ operator: name });
   if (!calls.length) return null;
   const items = calls.map((c) => {
     const list = scores.get(c.id) ?? [];
-    const status: "ai" | "reviewed" | "disputed" = list.some((s) => s.disputed)
-      ? "disputed"
-      : list.some((s) => s.manager_score !== null)
-        ? "reviewed"
-        : "ai";
-    return { ...toListItem(c, list), status };
+    const review_status: OperatorProfile["calls"][number]["review_status"] = !isScored(c)
+      ? "unscored"
+      : list.some((s) => s.disputed)
+        ? "disputed"
+        : list.some((s) => s.manager_score !== null)
+          ? "reviewed"
+          : "ai";
+    return { ...toListItem(c, list), review_status };
   });
   return {
     name,
-    call_count: calls.length,
-    avg_total: avg(items.map((i) => i.final_total)),
-    max_total: modeOf(calls.map((c) => c.max_total)),
-    by_criterion: criterionAverages(calls.map((c) => scores.get(c.id) ?? [])),
+    call_count: scored.length,
+    avg_total: avg(scored.map((c) => finalTotal(scores.get(c.id), c.total))),
+    max_total: modeOf(scored.map((c) => c.max_total)),
+    by_criterion: criterionAverages(scored.map((c) => scores.get(c.id) ?? [])),
     calls: items,
     recommendations: calls
       .filter((c) => c.training_recommendation)
@@ -293,15 +300,15 @@ export async function getOperatorProfile(name: string): Promise<OperatorProfile 
 // ---------------------------------------------------------------------------
 
 export async function getMyTraining(name: string): Promise<TrainingView> {
-  const [{ calls, scores }, scenarios] = await Promise.all([loadCalls({ operator: name }), listScenarios()]);
+  const [{ calls, scored, scores }, scenarios] = await Promise.all([loadCalls({ operator: name }), listScenarios()]);
   const history = calls.map((c) => toListItem(c, scores.get(c.id)));
-  const lastCall = calls[0] ?? null;
+  const lastCall = scored[0] ?? null; // rəy yalnız qiymətləndirilmiş zəngdən
 
   // Tövsiyə: əvvəlcə hələ edilməmiş ssenari; hamısı edilibsə — faizlə ən zəif nəticəli ssenari.
   const done = new Set(calls.map((c) => c.scenario_id));
   let recommended = scenarios.find((s) => !done.has(s.id)) ?? null;
-  if (!recommended && history.length) {
-    const worst = [...calls].sort(
+  if (!recommended && scored.length) {
+    const worst = [...scored].sort(
       (a, b) =>
         finalTotal(scores.get(a.id), a.total) / (a.max_total || 1) -
         finalTotal(scores.get(b.id), b.total) / (b.max_total || 1)
@@ -323,7 +330,7 @@ export async function getMyTraining(name: string): Promise<TrainingView> {
 // ---------------------------------------------------------------------------
 
 export async function getAgreementMetrics(): Promise<AgreementMetrics> {
-  const { calls, scores } = await loadCalls();
+  const { scored: calls, scores } = await loadCalls();
   const pairs = calls.flatMap((c) => (scores.get(c.id) ?? []).filter((s) => s.manager_score !== null));
   const pct = (n: number, d: number) => (d ? Math.round((n / d) * 1000) / 10 : null);
 

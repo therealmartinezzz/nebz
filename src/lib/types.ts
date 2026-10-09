@@ -3,6 +3,8 @@
 export type Score = 0 | 1 | 2;
 export type Confidence = "high" | "low";
 export type CallMode = "voice" | "text";
+/** pending = transkript saxlanılıb, qiymətləndirilir; scored = ballar var; failed = qiymətləndirmə alınmayıb. */
+export type CallStatus = "pending" | "scored" | "failed";
 
 export type Criterion = {
   id: number;
@@ -83,12 +85,14 @@ export type CallRow = {
   mode: CallMode;
   transcript: Line[];
   duration_sec: number | null;
-  total: number; // AI cəmi
-  max_total: number;
+  status: CallStatus;
+  scoring_error: string | null;
+  total: number | null; // AI cəmi; qiymətləndirilməyibsə null
+  max_total: number | null;
   strengths: string[] | null;
   improvements: string[] | null;
   training_recommendation: string | null;
-  confidence: Confidence;
+  confidence: Confidence | null;
   confidence_reason: string | null;
   model: string | null;
   scoring_ms: number | null;
@@ -99,17 +103,17 @@ export type CallRow = {
 export type CallReport = {
   call: CallRow;
   scores: ScoreWithReviews[];
-  final_total: number; // rəhbər düzəlişləri ilə cəm
+  final_total: number | null; // rəhbər düzəlişləri ilə cəm; qiymətləndirilməyibsə null
   reviewed: boolean; // ən azı bir rəhbər qərarı var
 };
 
 export type CallListItem = Pick<
   CallRow,
-  "id" | "operator_name" | "total" | "max_total" | "confidence" | "duration_sec" | "created_at" | "mode"
+  "id" | "operator_name" | "total" | "max_total" | "confidence" | "duration_sec" | "created_at" | "mode" | "status"
 > & {
   scenarios: { title: string; department: string } | null;
-  /** Backend həmişə doldurur; optional-dır ki, CallRow da CallListItem kimi istifadə oluna bilsin. */
-  final_total?: number;
+  /** Rəhbər düzəlişləri ilə cəm; qiymətləndirilməyibsə null. Optional-dır ki, CallRow da CallListItem kimi istifadə oluna bilsin. */
+  final_total?: number | null;
 };
 
 export type CriterionAvg = { criterion: number; name: string; avg: number; count: number };
@@ -156,7 +160,7 @@ export type OperatorProfile = {
   avg_total: number | null;
   max_total: number | null;
   by_criterion: CriterionAvg[];
-  calls: (CallListItem & { status: "ai" | "reviewed" | "disputed" })[];
+  calls: (CallListItem & { review_status: "unscored" | "ai" | "reviewed" | "disputed" })[];
   recommendations: { call_id: string; created_at: string; text: string }[];
 };
 

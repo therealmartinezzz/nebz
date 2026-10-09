@@ -2,6 +2,16 @@
 
 **Son yenilənmə:** 9 oktyabr 2026, 17:15 (Bakı). Yeni sessiyaya keçəndə əvvəlcə bu faylı, sonra `AGENTS.md` / `CLAUDE.md`-ni oxu.
 
+## Cari vəziyyət — 18:55 səsli sınaq düzəlişləri
+
+Real səsli sınaqda (operator "Ayse") tapılan problemlər düzəldildi (lokal commit, push gözləyir):
+- **Söhbət itirdi:** limit dolanda zəng saxlanmırdı. İndi `POST /api/calls` əvvəlcə transkripti bazaya yazır (`calls.status`, miqrasiya 0004 tətbiq olunub), sonra qiymətləndirir; xətada zəng `failed` qalır, hesabatda "İndi qiymətləndir" (`POST /api/calls/{id}/score`). Limit/bağlantı kəsiləndə zəng avtomatik saxlanılır.
+- **Operator nitqi türk/yapon/ispan kimi yazılırdı:** transkripsiyaya `languageCodes: ["az"]` + bank lüğəti.
+- **Müştəri cavabı hissə-hissə təkrarlanırdı:** səs aşkarlaması daha az həssas (səs-küy sözü kəsməsin) + kəsilmiş təkrar fraqmentlər transkriptdən çıxarılır.
+- **"60 saniyə" mesajı 00:40-da:** limit `.env.local`-da `GEMINI_LIVE_MAX_SECONDS=40`; mesaj artıq real limiti yazır.
+- `.env.local`-da açar adı səhvləri düzəldildi (`GEMINI_SCORING_MODEL`, `DEMO_AI_BUDGET_USD`, `DEMO_BUDGET_ID`).
+- Testlər: 41 unit + 26 inteqrasiya keçir. Real mikrofonla təkrar sınaq lazımdır.
+
 ## Cari vəziyyət — Gemini inteqrasiyası
 
 Aşağıdakı 16:03 qeydləri tarixi checkpoint-dir; cari qərar və nəticələr bu bölmədədir.

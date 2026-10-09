@@ -33,6 +33,8 @@ export default function CallClient({ scenarioId, title, department, operatorName
   const durationRef = useRef(0);
   const voiceRef = useRef<GeminiVoice | null>(null);
   const linesRef = useRef<Line[]>([]);
+  const savingRef = useRef(false);
+  const endCallRef = useRef<() => Promise<void>>(async () => {});
   const now = () => startRef.current ? (Date.now() - startRef.current) / 1000 : 0;
 
   useEffect(() => {
@@ -60,6 +62,8 @@ export default function CallClient({ scenarioId, title, department, operatorName
       disconnected: (message) => {
         durationRef.current = now(); setElapsed(durationRef.current);
         setStatus(linesRef.current.length ? "ended" : "error"); setError(message);
+        // Söhbət itməsin: limit dolanda və ya bağlantı kəsiləndə transkript avtomatik saxlanılır və qiymətləndirilir.
+        if (linesRef.current.length >= 2) void endCallRef.current();
       },
     });
     voiceRef.current = voice;
@@ -89,19 +93,23 @@ export default function CallClient({ scenarioId, title, department, operatorName
     finally { setWaiting(false); }
   }
   async function endCall() {
-    if (waiting || status === "scoring") return;
+    if (waiting || savingRef.current) return;
+    savingRef.current = true;
     if (status === "live") durationRef.current = now();
     setElapsed(durationRef.current); setCustomerSpeaking(false); setOperatorSpeaking(false); setStatus("scoring"); setError("");
     try {
       const transcript = voiceRef.current ? await voiceRef.current.finish() : linesRef.current;
       linesRef.current = transcript; setLines(transcript); stopVoice();
-      const result = await postJSON<{ id?: string; error?: string }>("/api/calls", { scenarioId, operatorName, mode, transcript, durationSec: durationRef.current });
-      if (!result.id) throw new Error(result.error || "Qiymətləndirmə alınmadı.");
-      notify({ tone: "success", title: "Zəng qiymətləndirildi", description: "Nəticə və transkript üzrə sübutlar hesabatda hazırdır." });
+      const result = await postJSON<{ id?: string; scored?: boolean; error?: string }>("/api/calls", { scenarioId, operatorName, mode, transcript, durationSec: durationRef.current });
+      if (!result.id) throw new Error(result.error || "Zəng saxlanılmadı.");
+      // Zəng bazadadır: qiymətləndirmə alınmasa da hesabata keçirik, orada yenidən qiymətləndirmək olar.
+      if (result.scored) notify({ tone: "success", title: "Zəng qiymətləndirildi", description: "Nəticə və transkript üzrə sübutlar hesabatda hazırdır." });
+      else notify({ tone: "error", title: "Zəng saxlanıldı, qiymətləndirilmədi", description: result.error || "Hesabatda yenidən qiymətləndirə bilərsiniz." });
       router.push(`/report/${encodeURIComponent(result.id)}`);
       router.refresh();
-    } catch (e) { setError(e instanceof Error ? e.message : "Qiymətləndirmə alınmadı."); setStatus("ended"); }
+    } catch (e) { savingRef.current = false; setError(e instanceof Error ? e.message : "Zəng saxlanılmadı."); setStatus("ended"); }
   }
+  endCallRef.current = endCall;
   function toggleMute() { voiceRef.current?.setMuted(!muted); setMuted(!muted); }
 
   const live = status === "live";
@@ -124,7 +132,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
         {live && <div className="call-controls">{mode === "voice" && <button type="button" className="icon-button" onClick={toggleMute} aria-label={muted ? "Mikrofonu aç" : "Mikrofonu bağla"} aria-pressed={muted}><Icon name={muted ? "mic-off" : "mic"} width="24" height="24" /></button>}<button type="button" className="icon-button end" aria-label="Zəngi bitir və qiymətləndir" title="Zəngi bitir və qiymətləndir" onClick={() => void endCall()} disabled={!hasEnoughTranscript || waiting}><Icon name="hangup" width="24" height="24" /></button></div>}
         {live && !hasEnoughTranscript && <p className="muted small">Qiymətləndirmə üçün ən azı 2 operator replikası lazımdır.</p>}
         {live && mode === 'text' && <p className="muted small">Demo məşqi maksimum 5 operator replikasıdır.{textLimitReached && ' Məşqi bitirib nəticəni görün.'}</p>}
-        {status === "ended" && <><button className="btn primary" onClick={() => void endCall()} disabled={!hasEnoughTranscript}>Qiymətləndirməni yenidən göndər</button><Link className="btn" href="/">Yeni məşq seç</Link></>}
+        {status === "ended" && <><button className="btn primary" onClick={() => void endCall()} disabled={!hasEnoughTranscript}>Saxla və qiymətləndir</button><Link className="btn" href="/">Yeni məşq seç</Link></>}
         {status === "error" && <><button className="btn primary" onClick={startVoice} disabled={!available}>Səs bağlantısını yenidən qur</button><Link className="btn" href={practiceHref(scenarioId, operatorName, "text")}>Mətn rejiminə keç</Link></>}
         {mode === "voice" && <p className="muted small">Demo zəngi maksimum {fmtTime(voiceLimit || 60)} · Operator replikaları: {voiceTurns}/10</p>}
       </section>

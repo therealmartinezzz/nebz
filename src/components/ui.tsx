@@ -30,8 +30,8 @@ export function CallsTable({ calls, profileLinks = false }: { calls: CallListIte
     <td data-label="Ssenari"><Link className="plain-link" href={`/report/${call.id}`}>{call.scenarios?.title ?? "Ssenari yoxdur"}</Link></td>
     <td data-label="Tarix">{date(call.created_at)}</td>
     <td data-label="Müddət" className="mono">{call.duration_sec === null ? "—" : fmtTime(call.duration_sec)}</td>
-    <td data-label="Etibarlılıq"><span className={`pill ${call.confidence === "low" ? "warn" : "ok"}`}>{call.confidence === "low" ? "Aşağı" : "Yüksək"}</span></td>
-    <td data-label="Bal" className="mono text-right"><Link href={`/report/${call.id}`}>{call.total}/{call.max_total}</Link></td>
+    <td data-label="Etibarlılıq">{call.total === null ? <span className="pill warn">{call.status === "pending" ? "Qiymətləndirilir" : "Qiymətləndirilməyib"}</span> : <span className={`pill ${call.confidence === "low" ? "warn" : "ok"}`}>{call.confidence === "low" ? "Aşağı" : "Yüksək"}</span>}</td>
+    <td data-label="Bal" className="mono text-right"><Link href={`/report/${call.id}`}>{call.total === null ? "—" : `${call.final_total ?? call.total}/${call.max_total}`}</Link></td>
   </tr>)}</tbody></table>;
 }
 export function OperatorPicker({ names, selected = "" }: { names: string[]; selected?: string }) {

@@ -105,9 +105,10 @@ export class GeminiVoice {
           this.disconnect("Mikrofon səsi göndərilmədi. Mövcud transkripti qiymətləndirə bilərsiniz.");
         }
       };
+      const limitSec = Math.min(60, credentials.maxDurationSec);
       this.durationTimer = setTimeout(() => {
-        this.endAtLimit('60 saniyəlik demo limiti bitdi. Mövcud transkripti qiymətləndirə bilərsiniz.');
-      }, Math.min(60, credentials.maxDurationSec) * 1000);
+        this.endAtLimit(`${limitSec} saniyəlik demo limiti bitdi. Söhbət saxlanılır və qiymətləndirilir.`);
+      }, limitSec * 1000);
       return credentials.maxDurationSec;
     } catch (error) {
       this.close();
@@ -159,7 +160,7 @@ export class GeminiVoice {
       if (this.operatorTurns >= this.maxOperatorTurns) {
         this.turnLimitReached = true;
         this.stopMicrophone();
-        if (!this.sources.size) this.endAtLimit('10 operator replikası tamamlandı. Mövcud transkripti qiymətləndirə bilərsiniz.');
+        if (!this.sources.size) this.endAtLimit('10 operator replikası tamamlandı. Söhbət saxlanılır və qiymətləndirilir.');
       }
       this.transcript.completeTurn();
       this.operatorStart = undefined;
@@ -190,7 +191,7 @@ export class GeminiVoice {
       this.sources.delete(source);
       source.disconnect();
       if (!this.sources.size) this.callbacks.customerSpeaking(false);
-      if (!this.sources.size && this.turnLimitReached) this.endAtLimit('10 operator replikası tamamlandı. Mövcud transkripti qiymətləndirə bilərsiniz.');
+      if (!this.sources.size && this.turnLimitReached) this.endAtLimit('10 operator replikası tamamlandı. Söhbət saxlanılır və qiymətləndirilir.');
     };
   }
 
