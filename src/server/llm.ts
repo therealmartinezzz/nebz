@@ -28,11 +28,15 @@ export function modelName() {
     : process.env.GEMINI_MODEL || "gemini-3.8-flash";
 }
 
+/** Açar və ya konfiqurasiya yoxdur — route-lar bunu 503 kimi qaytarır (model xətası 502-dən fərqli). */
+export class LlmConfigError extends Error {}
+
 let anthropic: Anthropic | null = null;
 let gemini: GoogleGenAI | null = null;
 
 export async function complete({ system, messages, maxTokens, json }: CompleteArgs): Promise<string> {
   if (provider() === "claude") {
+    if (!process.env.ANTHROPIC_API_KEY) throw new LlmConfigError("AI modeli qoşulmayıb: ANTHROPIC_API_KEY təyin edilməyib");
     anthropic ??= new Anthropic();
     const res = await anthropic.messages.create({ model: modelName(), max_tokens: maxTokens, system, messages });
     return res.content
@@ -42,7 +46,7 @@ export async function complete({ system, messages, maxTokens, json }: CompleteAr
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY təyin edilməyib");
+  if (!apiKey) throw new LlmConfigError("AI modeli qoşulmayıb: GEMINI_API_KEY təyin edilməyib");
   gemini ??= new GoogleGenAI({ apiKey });
   const res = await gemini.models.generateContent({
     model: modelName(),

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { draftScenario, ScenarioValidationError } from "@/server/ai";
-import { fail, readJson } from "@/server/http";
+import { fail, modelFailure, readJson } from "@/server/http";
 import type { ScenarioDraftInput } from "@/lib/types";
 
 // Ekran 5: xidmət standartından ssenari qaralaması (bazaya yazmır).
@@ -21,9 +21,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(draft);
   } catch (e) {
-    console.error("draftScenario", e);
     if (e instanceof ScenarioValidationError) return fail(`AI qaralaması natamamdır: ${e.message}. Yenidən yaradın.`, 502);
-    const msg = e instanceof Error && e.message.startsWith("Model") ? e.message : "Qaralama hazırlanmadı, yenidən cəhd edin";
-    return fail(msg, 502);
+    return modelFailure(e, "Qaralama hazırlanmadı, yenidən cəhd edin", "draftScenario");
   }
 }

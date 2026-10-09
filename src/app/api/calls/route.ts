@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { scoreCall } from "@/server/ai";
 import { modelName, provider } from "@/server/llm";
-import { fail, isUuid, readJson } from "@/server/http";
+import { fail, isUuid, modelFailure, readJson } from "@/server/http";
 import type { Line, Scenario } from "@/lib/types";
 
 type Body = {
@@ -33,9 +33,7 @@ export async function POST(req: Request) {
   try {
     result = await scoreCall(scenario.rubric, transcript);
   } catch (e) {
-    console.error("scoreCall", e);
-    const msg = e instanceof Error && e.message.startsWith("Model") ? e.message : "Qiymətləndirmə alınmadı, yenidən cəhd edin";
-    return fail(msg, 502);
+    return modelFailure(e, "Qiymətləndirmə alınmadı, yenidən cəhd edin", "scoreCall");
   }
   const scoring_ms = Date.now() - started;
 

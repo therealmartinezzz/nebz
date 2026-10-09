@@ -2,6 +2,7 @@
 
 Bütün tiplər: **`src/lib/types.ts`** (mənbə həqiqəti — burada yalnız xülasə).
 Bütün xəta cavabları: `{ "error": "Azərbaycan dilində mesaj" }` + 4xx/5xx. Frontend `error`-u istifadəçiyə olduğu kimi göstərə bilər.
+Model çağıran endpoint-lər (`/api/calls`, `/api/customer-reply`, `/api/scenarios/draft`): **503** = AI açarı qoşulmayıb (konfiqurasiya), **502** = model xətası və ya pozuk cavab (yenidən cəhd et düyməsi göstər).
 Status: **hazır** — kodda var, typecheck/build keçir; real açarla sınaq sonda edilir.
 
 ## Server sorğuları — `src/server/queries.ts`

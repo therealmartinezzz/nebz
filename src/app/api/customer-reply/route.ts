@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { customerReply } from "@/server/ai";
-import { fail, isUuid, readJson } from "@/server/http";
+import { fail, isUuid, modelFailure, readJson } from "@/server/http";
 import type { Line } from "@/lib/types";
 
 // Mətn (ehtiyat) rejimi: operator yazır, AI müştəri cavab verir.
@@ -19,7 +19,6 @@ export async function POST(req: Request) {
     if (!text) return fail("AI müştəri boş cavab verdi, yenidən göndərin", 502);
     return NextResponse.json({ text });
   } catch (e) {
-    console.error("customer-reply", e);
-    return fail("AI müştəri cavab vermədi, yenidən göndərin", 502);
+    return modelFailure(e, "AI müştəri cavab vermədi, yenidən göndərin", "customer-reply");
   }
 }
