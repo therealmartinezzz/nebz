@@ -1,5 +1,7 @@
 @AGENTS.md
 
+> **Hardayıq:** `docs/08-checkpoint-and-budget.md` — yeni sessiyada əvvəlcə onu oxu (vəziyyət, açıq məsələlər, model/büdcə qərarı).
+
 # Claude Code: backend rolu
 
 Bu sessiya **backend** tərəfidir: `src/app/api/**`, `src/server/**`, `supabase/**` və `src/lib/types.ts` müqaviləsi. Frontend Codex-də başqa kompüterdə işləyir — onun yollarına (`page.tsx`, `*Client.tsx`, `components/`, `globals.css`) yalnız açıq razılıqla toxun.

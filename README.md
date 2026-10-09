@@ -51,6 +51,7 @@ npm run test:integration  # real Supabase + mock model: zəng → hesabat → et
 İnteqrasiya testi `.env.local`-dakı bazaya yazır və yaratdığı datanı (`TEST-*` operatorları, test ssenariləri) sonda silir. Real model çağırılmır.
 
 ## Komanda üçün
+- **Vəziyyət və büdcə planı (checkpoint):** [`docs/08-checkpoint-and-budget.md`](docs/08-checkpoint-and-budget.md)
 - Agent/komanda qaydaları: [`AGENTS.md`](AGENTS.md) (Codex və Claude Code bunu oxuyur)
 - Git axını: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Frontend ↔ backend müqaviləsi: [`docs/api.md`](docs/api.md)
