@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<title>Ssenari yaradıcısı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0F6E66}a:hover{color:#0A4F49}
+</style>
+</helmet>
+<div style="min-height: 1240px; background: #F6F7F9; color: #111827; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px;">
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #E3E6EA;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 28px; height: 28px; border-radius: 8px; background: #0F6E66; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 18px; letter-spacing: -0.01em;">Nəbz</span>
+      <span style="color: #4B5563; font-size: 13px; margin-left: 4px;">xidmət keyfiyyəti</span>
+    </div>
+    <nav style="display: flex; flex-wrap: wrap; gap: 4px;">
+      <a href="Dashboard.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Panel</a>
+      <a href="Main.dc.html" style="padding: 10px 14px; border-radius: 8px; background: #E6F1F0; color: #0A4F49; text-decoration: none; font-weight: 600;">Ssenarilər</a>
+      <a href="Report.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Hesabatlar</a>
+      <a href="Review.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Yoxlama <span style="font-size: 12px; font-weight: 700; background: #FDF0E1; color: #8A3A08; padding: 1px 7px; border-radius: 999px;">4</span></a>
+      <a href="Training.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Məşqlər</a>
+    </nav>
+    <div style="font-size: 13px; color: #4B5563;">NovaBank · demo şirkət</div>
+  </header>
+
+  <main style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px;">
+      <div>
+        <a href="Main.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none;">← Ssenarilər</a>
+        <h1 style="margin: 8px 0 6px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em;">Yeni ssenari</h1>
+        <p style="margin: 0; color: #4B5563;">Şirkətin xidmət standartını yapışdırın. AI ondan müştəri ssenarisi və qiymətləndirmə meyarları hazırlayır.</p>
+      </div>
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px;">
+        <li style="padding: 8px 12px; border-radius: 999px; background: #E6F1F0; color: #0A4F49; font-weight: 600;">1 Mənbə</li>
+        <li style="padding: 8px 12px; border-radius: 999px; background: #0F6E66; color: #FFFFFF; font-weight: 600;">2 AI qaralaması</li>
+        <li style="padding: 8px 12px; border-radius: 999px; border: 1px solid #C9CED6; color: #4B5563; font-weight: 600;">3 Sınaq və təsdiq</li>
+      </ol>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+      <section style="flex: 1 1 360px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+        <h2 style="margin: 0; font-size: 17px;">Mənbə</h2>
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-weight: 600; font-size: 14px;">Xidmət standartı və ya zəng skripti</span>
+          <textarea rows="9" style="font: inherit; font-size: 14px; line-height: 1.5; padding: 12px; border: 1px solid #C9CED6; border-radius: 10px; resize: vertical; color: #111827;">1. Zəng 3 siqnal ərzində cavablandırılır.
+2. Operator bankın adını və öz adını deyir.
+3. Kartla bağlı hər əməliyyatdan əvvəl doğum tarixi və kartın son 4 rəqəmi yoxlanılır.
+4. Şikayət edən müştəridən üzr istənilir, problem qeydə alınır.
+5. Müştəriyə dəqiq müddət deyilir, ehtimal deyil.</textarea>
+          <span style="font-size: 13px; color: #4B5563;">PDF və ya DOCX də yükləmək olar.</span>
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <label style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-weight: 600; font-size: 14px;">Departament</span>
+            <select style="font: inherit; min-height: 44px; padding: 8px 10px; border: 1px solid #C9CED6; border-radius: 10px; background: #FFFFFF;"><option>Kart xidmətləri</option></select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-weight: 600; font-size: 14px;">Dil</span>
+            <select style="font: inherit; min-height: 44px; padding: 8px 10px; border: 1px solid #C9CED6; border-radius: 10px; background: #FFFFFF;"><option>Azərbaycan dili</option><option>Rus dili</option></select>
+          </label>
+        </div>
+        <fieldset style="border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+          <legend style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">Müştəri tipi</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span style="padding: 8px 12px; border-radius: 999px; background: #0F6E66; color: #FFFFFF; font-size: 14px; font-weight: 600;">Əsəbi</span>
+            <span style="padding: 8px 12px; border-radius: 999px; background: #0F6E66; color: #FFFFFF; font-size: 14px; font-weight: 600;">Tələsən</span>
+            <span style="padding: 8px 12px; border-radius: 999px; border: 1px solid #C9CED6; font-size: 14px;">Çaşqın</span>
+            <span style="padding: 8px 12px; border-radius: 999px; border: 1px solid #C9CED6; font-size: 14px;">Yaşlı</span>
+            <span style="padding: 8px 12px; border-radius: 999px; border: 1px solid #C9CED6; font-size: 14px;">Rus dilli</span>
+          </div>
+        </fieldset>
+        <fieldset style="border: none; margin: 0; padding: 0;">
+          <legend style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">Çətinlik</legend>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #C9CED6; border-radius: 10px; overflow: hidden;">
+            <span style="text-align: center; padding: 10px; font-size: 14px;">Aşağı</span>
+            <span style="text-align: center; padding: 10px; font-size: 14px; background: #111827; color: #FFFFFF; font-weight: 600;">Orta</span>
+            <span style="text-align: center; padding: 10px; font-size: 14px;">Yüksək</span>
+          </div>
+        </fieldset>
+        <button style="font: inherit; font-weight: 600; min-height: 48px; border: none; border-radius: 10px; background: #111827; color: #FFFFFF; cursor: pointer;">AI ilə yenidən yarat</button>
+      </section>
+
+      <section style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <h2 style="margin: 0; font-size: 17px;">AI qaralaması · Bloklanmış kart</h2>
+            <span style="font-size: 13px; color: #4B5563;">Hər sahə redaktə olunur</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+            <div style="background: #F6F7F9; border-radius: 10px; padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: #4B5563; text-transform: uppercase; letter-spacing: 0.06em;">Persona</div>
+              <div style="margin-top: 6px;">Leyla M., İstanbulda səfərdə. İkinci dəfə zəng edir, əsəbi, tələsir, təhqir etmir.</div>
+            </div>
+            <div style="background: #F6F7F9; border-radius: 10px; padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: #4B5563; text-transform: uppercase; letter-spacing: 0.06em;">Gizli fakt</div>
+              <div style="margin-top: 6px;">Kart xaricdəki qeyri-adi əməliyyata görə avtomatik bloklanıb.</div>
+            </div>
+            <div style="background: #FDF0E1; border-radius: 10px; padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: #8A3A08; text-transform: uppercase; letter-spacing: 0.06em;">Tələ anı</div>
+              <div style="margin-top: 6px;">«Tələsirəm, yoxlama suallarını keçək.» Standartın 3-cü bəndini yoxlayır.</div>
+            </div>
+            <div style="background: #E6F1F0; border-radius: 10px; padding: 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: #0A4F49; text-transform: uppercase; letter-spacing: 0.06em;">Düzgün həll</div>
+              <div style="margin-top: 6px;">Yoxlama → əməliyyatın təsdiqi → blokun açılması və dəqiq müddət.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px;">
+          <h2 style="margin: 0 0 6px; font-size: 17px;">Qiymətləndirmə meyarları</h2>
+          <p style="margin: 0 0 12px; color: #4B5563; font-size: 14px;">Hər meyar standartın konkret bəndinə bağlıdır, beləliklə bal izah oluna bilir.</p>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; min-width: 600px; border-collapse: collapse; font-size: 14px;">
+              <thead>
+                <tr style="text-align: left; color: #4B5563; font-size: 13px;">
+                  <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">Meyar</th>
+                  <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">2 bal üçün</th>
+                  <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">Mənbə</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-weight: 600;">Salamlaşma</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Bankın adı, öz adı, kömək təklifi</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-family: 'IBM Plex Mono', monospace;">§2</td></tr>
+                <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-weight: 600;">Şəxsiyyət təsdiqi</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Təzyiqə baxmayaraq yoxlama aparıldı</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-family: 'IBM Plex Mono', monospace;">§3</td></tr>
+                <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-weight: 600;">Empatiya</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Üzr və əvvəlki səhvin qəbulu</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-family: 'IBM Plex Mono', monospace;">§4</td></tr>
+                <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-weight: 600;">Problemin həlli</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Blok açıldı və ya aydın yol göstərildi</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-family: 'IBM Plex Mono', monospace;">§4</td></tr>
+                <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-weight: 600;">Məlumatın doğruluğu</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Dəqiq müddət, ziddiyyət yoxdur</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; font-family: 'IBM Plex Mono', monospace;">§5</td></tr>
+                <tr><td style="padding: 10px 8px; font-weight: 600;">Davranış</td><td style="padding: 10px 8px;">Sözü kəsmədi, ton sakit qaldı</td><td style="padding: 10px 8px; font-family: 'IBM Plex Mono', monospace; color: #4B5563;">ümumi</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end;">
+          <a href="Call.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border-radius: 10px; border: 1px solid #C9CED6; background: #FFFFFF; color: #111827; font-weight: 600; text-decoration: none;">Sınaq zəngi et</a>
+          <a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border-radius: 10px; background: #0F6E66; color: #FFFFFF; font-weight: 600; text-decoration: none;">Təsdiqlə və saxla</a>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

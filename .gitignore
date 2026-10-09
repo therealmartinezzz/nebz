@@ -1,0 +1,17 @@
+# deps / build
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# açarlar — heç vaxt commit etmə
+.env
+.env*.local
+code/
+
+# lokal alətlər
+.claude/settings.local.json
+.DS_Store
+Thumbs.db

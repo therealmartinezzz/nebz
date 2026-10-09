@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nebz-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "code", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

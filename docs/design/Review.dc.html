@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<title>Rəhbər yoxlaması</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0F6E66}a:hover{color:#0A4F49}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #F6F7F9; color: #111827; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px;">
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #E3E6EA;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 28px; height: 28px; border-radius: 8px; background: #0F6E66; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 18px; letter-spacing: -0.01em;">Nəbz</span>
+      <span style="color: #4B5563; font-size: 13px; margin-left: 4px;">xidmət keyfiyyəti</span>
+    </div>
+    <nav style="display: flex; flex-wrap: wrap; gap: 4px;">
+      <a href="Dashboard.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Panel</a>
+      <a href="Main.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Ssenarilər</a>
+      <a href="Report.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Hesabatlar</a>
+      <a href="Review.dc.html" style="padding: 10px 14px; border-radius: 8px; background: #E6F1F0; color: #0A4F49; text-decoration: none; font-weight: 600;">Yoxlama <span style="font-size: 12px; font-weight: 700; background: #FDF0E1; color: #8A3A08; padding: 1px 7px; border-radius: 999px;">4</span></a>
+      <a href="Training.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Məşqlər</a>
+    </nav>
+    <div style="font-size: 13px; color: #4B5563;">NovaBank · demo şirkət</div>
+  </header>
+
+  <main style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; display: flex; flex-direction: column; gap: 20px;">
+    <div>
+      <h1 style="margin: 0 0 6px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em;">Rəhbər yoxlaması</h1>
+      <p style="margin: 0; color: #4B5563;">AI-ın əmin olmadığı ballar və işçilərin etirazları buraya düşür. Son qərarı rəhbər verir.</p>
+    </div>
+
+    <div role="tablist" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button role="tab" aria-selected="true" style="font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: none; background: #111827; color: #FFFFFF; cursor: pointer;">Hamısı · 4</button>
+      <button role="tab" aria-selected="false" style="font: inherit; font-weight: 500; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid #C9CED6; background: #FFFFFF; color: #111827; cursor: pointer;">Etirazlar · 2</button>
+      <button role="tab" aria-selected="false" style="font: inherit; font-weight: 500; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid #C9CED6; background: #FFFFFF; color: #111827; cursor: pointer;">Aşağı etibarlılıq · 2</button>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+      <section style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #FFFFFF; border: 2px solid #0F6E66; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Tural M.</span><span style="font-size: 12px; font-weight: 600; color: #8A3A08; background: #FDF0E1; padding: 3px 8px; border-radius: 999px;">Etiraz</span></div>
+          <div style="color: #4B5563; font-size: 14px;">Bloklanmış kart · Problemin həlli: 0/2</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Orxan Q.</span><span style="font-size: 12px; font-weight: 600; color: #374151; background: #EEF0F3; padding: 3px 8px; border-radius: 999px;">Aşağı etibarlılıq</span></div>
+          <div style="color: #4B5563; font-size: 14px;">01:12-də transkript aydın deyil</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Nərmin Ə.</span><span style="font-size: 12px; font-weight: 600; color: #374151; background: #EEF0F3; padding: 3px 8px; border-radius: 999px;">Aşağı etibarlılıq</span></div>
+          <div style="color: #4B5563; font-size: 14px;">Azərbaycan və rus dili qarışıq danışıq</div>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Aysel H.</span><span style="font-size: 12px; font-weight: 600; color: #8A3A08; background: #FDF0E1; padding: 3px 8px; border-radius: 999px;">Etiraz</span></div>
+          <div style="color: #4B5563; font-size: 14px;">Bloklanmış kart · Məlumatın doğruluğu: 1/2</div>
+        </div>
+      </section>
+
+      <section style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 18px;">
+        <div>
+          <div style="font-size: 13px; color: #4B5563;">Tural M. · Kart xidmətləri · 08.10.2026</div>
+          <h2 style="margin: 4px 0 0; font-size: 20px;">Problemin həlli · AI balı 0/2</h2>
+        </div>
+
+        <div style="background: #FDF0E1; border-radius: 12px; padding: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: #8A3A08; text-transform: uppercase; letter-spacing: 0.06em;">İşçinin etirazı</div>
+          <div style="margin-top: 6px;">«Müştəri şəxsiyyət yoxlamasından imtina etdi. Qaydaya görə kartı aça bilməzdim, zəngi düzgün bitirdim.»</div>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; font-weight: 600; color: #4B5563; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Transkriptdən</div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px;">
+            <div><span style="font-family: 'IBM Plex Mono', monospace; color: #4B5563;">02:05</span> <b>Müştəri:</b> Heç bir məlumat vermirəm, sadəcə açın.</div>
+            <div><span style="font-family: 'IBM Plex Mono', monospace; color: #4B5563;">02:11</span> <b>Operator:</b> Təəssüf ki, yoxlamasız aça bilmərəm. Mobil tətbiqdən də aça bilərsiniz.</div>
+          </div>
+        </div>
+
+        <div style="background: #F6F7F9; border-radius: 12px; padding: 14px; font-size: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: #4B5563; text-transform: uppercase; letter-spacing: 0.06em;">AI-ın əsaslandırması</div>
+          <div style="margin-top: 6px;">Blok açılmadı. Alternativ yol qısa deyildi, müştəri onu qəbul etmədi.</div>
+        </div>
+
+        <fieldset style="border: none; margin: 0; padding: 0;">
+          <legend style="font-weight: 600; margin-bottom: 8px;">Rəhbərin qərarı</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <label style="display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #C9CED6; border-radius: 10px;"><input type="radio" name="score" style="accent-color: #0F6E66;"> 0</label>
+            <label style="display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #C9CED6; border-radius: 10px;"><input type="radio" name="score" style="accent-color: #0F6E66;"> 1</label>
+            <label style="display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 0 14px; border: 2px solid #0F6E66; border-radius: 10px;"><input type="radio" name="score" checked style="accent-color: #0F6E66;"> 2</label>
+          </div>
+        </fieldset>
+
+        <label style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-weight: 600;">Şərh</span>
+          <textarea rows="3" style="font: inherit; font-size: 14px; padding: 12px; border: 1px solid #C9CED6; border-radius: 10px; resize: vertical;">Operator qaydaya uyğun hərəkət edib və alternativ yol göstərib.</textarea>
+        </label>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; color: #4B5563; flex: 1 1 280px;">Hər düzəliş qiymətləndirmə keyfiyyəti testinə əlavə olunur və meyarların dəqiqləşdirilməsində istifadə edilir.</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <button style="font: inherit; font-weight: 600; min-height: 44px; padding: 10px 18px; border-radius: 10px; border: 1px solid #C9CED6; background: #FFFFFF; color: #111827; cursor: pointer;">AI balını saxla</button>
+            <button style="font: inherit; font-weight: 600; min-height: 44px; padding: 10px 18px; border-radius: 10px; border: none; background: #0F6E66; color: #FFFFFF; cursor: pointer;">Balı dəyiş</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

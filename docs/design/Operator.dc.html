@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<title>Operator profili</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0F6E66}a:hover{color:#0A4F49}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: #F6F7F9; color: #111827; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px;">
+  <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #E3E6EA;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 28px; height: 28px; border-radius: 8px; background: #0F6E66; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg>
+      </div>
+      <span style="font-weight: 700; font-size: 18px; letter-spacing: -0.01em;">Nəbz</span>
+      <span style="color: #4B5563; font-size: 13px; margin-left: 4px;">xidmət keyfiyyəti</span>
+    </div>
+    <nav style="display: flex; flex-wrap: wrap; gap: 4px;">
+      <a href="Dashboard.dc.html" style="padding: 10px 14px; border-radius: 8px; background: #E6F1F0; color: #0A4F49; text-decoration: none; font-weight: 600;">Panel</a>
+      <a href="Main.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Ssenarilər</a>
+      <a href="Report.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Hesabatlar</a>
+      <a href="Review.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Yoxlama <span style="font-size: 12px; font-weight: 700; background: #FDF0E1; color: #8A3A08; padding: 1px 7px; border-radius: 999px;">4</span></a>
+      <a href="Training.dc.html" style="padding: 10px 14px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 500;">Məşqlər</a>
+    </nav>
+    <div style="font-size: 13px; color: #4B5563;">NovaBank · demo şirkət</div>
+  </header>
+
+  <main style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; display: flex; flex-direction: column; gap: 24px;">
+    <a href="Dashboard.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none;">← Panel</a>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between;">
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #E6F1F0; color: #0A4F49; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 22px;">AH</div>
+        <div>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em;">Aysel H.</h1>
+          <div style="color: #4B5563;">Operator · Kart xidmətləri</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px dashed #8A3A08; color: #8A3A08;">Nümunə data</span>
+        <a href="Training.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border-radius: 10px; background: #0F6E66; color: #FFFFFF; font-weight: 600; text-decoration: none;">Məşq təyin et</a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 14px; padding: 18px;">
+        <div style="font-size: 13px; color: #4B5563; font-weight: 600;">Qiymətləndirilmiş zəng</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; margin-top: 6px;">12</div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 14px; padding: 18px;">
+        <div style="font-size: 13px; color: #4B5563; font-weight: 600;">Orta bal</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; margin-top: 6px;">9,3<span style="font-size: 16px; color: #4B5563;"> / 12</span></div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 14px; padding: 18px;">
+        <div style="font-size: 13px; color: #4B5563; font-weight: 600;">Son 4 həftədə dəyişiklik</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; margin-top: 6px; color: #0A4F49;">+1,2</div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 14px; padding: 18px;">
+        <div style="font-size: 13px; color: #4B5563; font-weight: 600;">Açıq məşq</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 32px; margin-top: 6px;">1</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch;">
+      <section style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <h2 style="margin: 0; font-size: 17px;">Həftəlik orta bal</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: end; height: 180px; padding-top: 10px; border-bottom: 1px solid #E3E6EA;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px;">8,1</span><div style="width: 100%; max-width: 56px; height: 120px; background: #9FD3CD; border-radius: 6px 6px 0 0;"></div></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px;">8,6</span><div style="width: 100%; max-width: 56px; height: 128px; background: #6BBDB4; border-radius: 6px 6px 0 0;"></div></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px;">9,0</span><div style="width: 100%; max-width: 56px; height: 134px; background: #2E968B; border-radius: 6px 6px 0 0;"></div></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;">9,3</span><div style="width: 100%; max-width: 56px; height: 140px; background: #0F6E66; border-radius: 6px 6px 0 0;"></div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; text-align: center; font-size: 13px; color: #4B5563;">
+          <span>1-ci həftə</span><span>2-ci həftə</span><span>3-cü həftə</span><span>4-cü həftə</span>
+        </div>
+      </section>
+
+      <section style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <h2 style="margin: 0; font-size: 17px;">Meyarlar üzrə (maks. 2)</h2>
+        <div style="display: grid; grid-template-columns: 160px minmax(0, 1fr) 36px; gap: 10px 12px; align-items: center;">
+          <span>Salamlaşma</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 100%; height: 10px; background: #0F6E66; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right;">2,0</span>
+          <span>Şəxsiyyət təsdiqi</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 95%; height: 10px; background: #0F6E66; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right;">1,9</span>
+          <span>Problemin həlli</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 80%; height: 10px; background: #0F6E66; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right;">1,6</span>
+          <span>Davranış</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 75%; height: 10px; background: #0F6E66; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right;">1,5</span>
+          <span>Doğruluq</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 65%; height: 10px; background: #0F6E66; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right;">1,3</span>
+          <span style="font-weight: 600;">Empatiya</span><div style="height: 10px; background: #EEF0F3; border-radius: 5px;"><div style="width: 55%; height: 10px; background: #C2410C; border-radius: 5px;"></div></div><span style="font-family: 'IBM Plex Mono', monospace; text-align: right; font-weight: 600;">1,1</span>
+        </div>
+      </section>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;">
+      <section style="flex: 1 1 340px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 12px;">
+        <h2 style="margin: 0; font-size: 17px;">Məşqlər</h2>
+        <div style="border: 1px solid #F2C99C; background: #FDF0E1; border-radius: 12px; padding: 14px;">
+          <div style="font-weight: 600;">Təkrar zəng edən müştəri</div>
+          <div style="color: #8A3A08; font-size: 14px; margin-top: 4px;">Gözləyir · 12.10-a qədər · empatiya üzrə</div>
+        </div>
+        <div style="border: 1px solid #E3E6EA; border-radius: 12px; padding: 14px;">
+          <div style="font-weight: 600;">Bloklanmış kart</div>
+          <div style="color: #4B5563; font-size: 14px; margin-top: 4px;">Tamamlanıb · 9/12</div>
+        </div>
+      </section>
+
+      <section style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 16px; padding: 22px;">
+        <h2 style="margin: 0 0 10px; font-size: 17px;">Zəng tarixçəsi</h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 520px; border-collapse: collapse;">
+            <thead>
+              <tr style="text-align: left; color: #4B5563; font-size: 13px;">
+                <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">Tarix</th>
+                <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">Ssenari</th>
+                <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600;">Status</th>
+                <th style="padding: 8px; border-bottom: 1px solid #E3E6EA; font-weight: 600; text-align: right;">Bal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">09.10</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;"><a href="Report.dc.html">Bloklanmış kart</a></td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Etiraz baxılır</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; text-align: right; font-family: 'IBM Plex Mono', monospace;">9/12</td></tr>
+              <tr><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">06.10</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Gecikən köçürmə</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3;">Təsdiqlənib</td><td style="padding: 10px 8px; border-bottom: 1px solid #EEF0F3; text-align: right; font-family: 'IBM Plex Mono', monospace;">10/12</td></tr>
+              <tr><td style="padding: 10px 8px;">02.10</td><td style="padding: 10px 8px;">Kredit şərtləri</td><td style="padding: 10px 8px;">Təsdiqlənib</td><td style="padding: 10px 8px; text-align: right; font-family: 'IBM Plex Mono', monospace;">9/12</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <p style="margin: 0; color: #4B5563; font-size: 13px;">Aysel bu nəticələri öz «Məşqlərim» səhifəsində görür. Ballar inkişaf və məşq üçündür, cəza üçün avtomatik istifadə edilmir.</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
