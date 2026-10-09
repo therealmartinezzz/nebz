@@ -45,10 +45,10 @@ describe("açar yoxdursa aydın konfiqurasiya xətası (şəbəkəyə getmədən
 });
 
 describe("Gemini işlər üzrə model bölgüsü", () => {
-  it("tez-tez çağırılan müştəri Lite, qiymətləndirmə və qaralama Flash istifadə edir", () => {
+  it("default: bütün mətn işləri gemini-3.8-flash (müştəri rolu keyfiyyəti üçün Lite-dan yüksəldilib)", () => {
     vi.stubEnv("LLM_PROVIDER", "gemini");
     for (const key of ["GEMINI_MODEL", "GEMINI_CUSTOMER_MODEL", "GEMINI_SCORING_MODEL", "GEMINI_DRAFT_MODEL"]) vi.stubEnv(key, "");
-    expect(modelName("customer")).toBe("gemini-3.5-flash-lite");
+    expect(modelName("customer")).toBe("gemini-3.8-flash");
     expect(modelName("scoring")).toBe("gemini-3.8-flash");
     expect(modelName("draft")).toBe("gemini-3.8-flash");
   });

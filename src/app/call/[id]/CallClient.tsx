@@ -34,6 +34,8 @@ export default function CallClient({ scenarioId, title, department, operatorName
   const voiceRef = useRef<GeminiVoice | null>(null);
   const linesRef = useRef<Line[]>([]);
   const savingRef = useRef(false);
+  const linesBoxRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef(true); // istifadəçi yuxarı qalxıbsa avtomatik scroll ona mane olmasın
   const endCallRef = useRef<() => Promise<void>>(async () => {});
   const now = () => startRef.current ? (Date.now() - startRef.current) / 1000 : 0;
 
@@ -43,6 +45,11 @@ export default function CallClient({ scenarioId, title, department, operatorName
     return () => clearInterval(interval);
   }, [status]);
   useEffect(() => () => stopVoice(), []);
+  // Yeni replika və ya mətn artdıqca transkript rəvan aşağı sürüşür (CSS scroll-behavior: smooth).
+  useEffect(() => {
+    const box = linesBoxRef.current;
+    if (box && followRef.current) box.scrollTo({ top: box.scrollHeight });
+  }, [lines, waiting]);
 
   function stopVoice() {
     voiceRef.current?.close();
@@ -137,7 +144,7 @@ export default function CallClient({ scenarioId, title, department, operatorName
         {mode === "voice" && <p className="muted small">Demo zəngi maksimum {fmtTime(voiceLimit || 60)} · Operator replikaları: {voiceTurns}/10</p>}
       </section>
       <section className="card transcript-panel"><div className="section-heading"><h2>Canlı transkript</h2><span className="muted small">Qiymətləndirmə zəngdən sonra göstərilir</span></div>{error && <div className="error">{error}</div>}
-        <div className="transcript-lines" aria-live="polite" aria-relevant="additions text">{!lines.length && <EmptyState title="Danışıq burada görünəcək" description={live ? "İlk cavabınızla söhbətə başlayın." : "Zəngi başlatdıqdan sonra operator və AI müştərinin replikaları vaxtla göstərilir."} />}{lines.map((line, i) => <div key={i} className={`bubble ${line.role === "operator" ? "op" : "cu"}`}><div className="who">{line.role === "operator" ? "Siz · operator" : "AI müştəri"} · {fmtTime(line.t)}</div>{line.text}</div>)}{waiting && <div className="bubble cu muted">AI müştəri cavab hazırlayır…</div>}</div>
+        <div ref={linesBoxRef} className="transcript-lines" aria-live="polite" aria-relevant="additions text" tabIndex={0} aria-label="Transkript" onScroll={(event) => { const box = event.currentTarget; followRef.current = box.scrollHeight - box.scrollTop - box.clientHeight < 80; }}>{!lines.length && <EmptyState title="Danışıq burada görünəcək" description={live ? "İlk cavabınızla söhbətə başlayın." : "Zəngi başlatdıqdan sonra operator və AI müştərinin replikaları vaxtla göstərilir."} />}{lines.map((line, i) => <div key={i} className={`bubble ${line.role === "operator" ? "op" : "cu"}`}><div className="who">{line.role === "operator" ? "Siz · operator" : "AI müştəri"} · {fmtTime(line.t)}</div>{line.text}</div>)}{waiting && <div className="bubble cu muted">AI müştəri cavab hazırlayır…</div>}</div>
         {mode === "text" && live && <form className="text-composer" onSubmit={(event) => { event.preventDefault(); void sendText(); }}><input type="text" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Operator kimi yazın…" aria-label="Operatorun cavabı" maxLength={1000} disabled={waiting || textLimitReached} autoFocus /><button className="btn primary" type="submit" disabled={waiting || textLimitReached || !draft.trim()}>{waiting ? "Gözləyin…" : "Göndər"}</button></form>}
       </section>
     </div>

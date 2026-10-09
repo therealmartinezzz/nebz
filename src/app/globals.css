@@ -156,6 +156,8 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); width
 @keyframes wave { from { height: 8px; } to { height: var(--height); } }
 .transcript-panel { display: flex; flex-direction: column; gap: 16px; border-radius: 20px; min-height: 570px; }
 .transcript-lines { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+/* Zəng ekranı: transkript sabit hündürlükdə, daxili scroll; yeni replika gələndə rəvan aşağı sürüşür (CallClient). */
+.transcript-panel .transcript-lines { flex: 1 1 0; min-height: 0; max-height: min(62vh, 560px); overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding: 4px 6px 4px 0; scrollbar-gutter: stable; }
 .bubble { max-width: 80%; padding: 12px 14px; border-radius: 12px 12px 12px 4px; line-height: 1.45; overflow-wrap: anywhere; }
 .bubble.op { align-self: flex-end; background: var(--accent-soft); border-radius: 12px 12px 4px 12px; }
 .bubble.cu { align-self: flex-start; background: var(--bg); }
@@ -244,6 +246,7 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); width
   .report-summary, .call-layout { grid-template-columns: 1fr; gap: 20px; }
   .callpanel { padding: 28px 20px; }
   .transcript-panel { min-height: 350px; }
+  .transcript-panel .transcript-lines { max-height: 55vh; }
   .bubble { max-width: 94%; }
   .form-grid { grid-template-columns: 1fr; }
   .rubric-levels { grid-template-columns: 1fr; }
@@ -268,7 +271,7 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); width
   .text-composer .btn { margin-left: auto; }
   .operator-picker .btn { width: 100%; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .waveform.active span { animation: none; height: var(--height); } }
+@media (prefers-reduced-motion: reduce) { html, .transcript-panel .transcript-lines { scroll-behavior: auto; } .waveform.active span { animation: none; height: var(--height); } }
 
 /* Motion acknowledges a choice or outcome; reading surfaces stay still. */
 .data-feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }

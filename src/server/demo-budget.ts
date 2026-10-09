@@ -26,11 +26,12 @@ export async function reserveDemo(task: Task, cost: number) {
   const client = requestClient.getStore();
   // Birbaşa server/CLI smoke yoxlaması açıq HTTP istifadəçisi deyil.
   if (!client) return null;
-  // Brauzer başına limit test üçün söndürülüb — yeganə qoruma ümumi $ büdcəsidir (DEMO_AI_BUDGET_USD).
-  // Lazım olsa env ilə yenidən qoymaq olar: DEMO_LIMIT_VOICE=30/3 (gündə/dəqiqədə).
-  const UNLIMITED: [number, number] = [1_000_000, 1_000_000];
+  // Brauzer başına [24 saatda, dəqiqədə] limit: 10 səsli + 10 mətn zəngi.
+  // Mətn zəngi = maksimum 5 AI müştəri cavabı → 50; hər zəngin bir qiymətləndirməsi → 20.
+  // Env ilə dəyişmək olar: DEMO_LIMIT_VOICE=10/2. Əsas qoruma ümumi $ büdcəsidir (DEMO_AI_BUDGET_USD).
+  const defaults: Record<Task, [number, number]> = { voice: [10, 2], customer: [50, 10], scoring: [20, 3], draft: [10, 2] };
   const env = process.env[`DEMO_LIMIT_${task.toUpperCase()}`]?.match(/^(\d+)\/(\d+)$/);
-  const caps = { [task]: env ? [Number(env[1]), Number(env[2])] : UNLIMITED } as Record<Task, [number, number]>;
+  const caps = { [task]: env ? [Number(env[1]), Number(env[2])] : defaults[task] } as Record<Task, [number, number]>;
   const budget = Number(process.env.DEMO_AI_BUDGET_USD || 3.5);
   if (!Number.isFinite(budget) || budget <= 0) throw new DemoBudgetError('Demo büdcəsi konfiqurasiya edilməyib.', 503);
   const { data, error } = await db().rpc('reserve_demo_ai', {

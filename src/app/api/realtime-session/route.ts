@@ -20,11 +20,12 @@ export async function POST(req: Request) {
   const model = process.env.GEMINI_LIVE_MODEL || "gemini-3.8-live";
   const voice = process.env.GEMINI_LIVE_VOICE || "Kore";
   const requestedLimit = Number(process.env.GEMINI_LIVE_MAX_SECONDS || 60);
-  const maxDurationSec = Number.isFinite(requestedLimit) ? Math.max(10, Math.min(60, Math.round(requestedLimit))) : 60;
+  const maxDurationSec = Number.isFinite(requestedLimit) ? Math.max(10, Math.min(90, Math.round(requestedLimit))) : 60;
   const maxOperatorTurns = 10;
   try {
     // Səs istifadəsi brauzerdədir; qısa demo üçün ehtiyat geri qaytarılmır.
-    await withDemoRequest(req, () => reserveDemo('voice', 0.045));
+    // Ehtiyat zəngin uzunluğuna mütənasibdir (60 san ≈ $0.045).
+    await withDemoRequest(req, () => reserveDemo('voice', Math.round((0.045 * maxDurationSec) / 60 * 10000) / 10000));
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY, httpOptions: { apiVersion: "v1beta" } });
     const token = await ai.authTokens.create({
       config: {
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
           model,
           config: {
             responseModalities: [Modality.AUDIO],
-            systemInstruction: scenario.persona_prompt + "\nYalnız Azərbaycan dilində danış. Operatorun ilk sözünü gözlə. Bu 60 saniyəlik qısa məşqdir. Hər dəfə yalnız bir qısa cümlə ilə cavab ver, uzun izah vermə.",
+            systemInstruction: scenario.persona_prompt + "\nYalnız Azərbaycan dilində danış. Operatorun ilk sözünü gözlə. Bu qısa məşqdir. Hər dəfə yalnız bir qısa cümlə ilə cavab ver, uzun izah vermə.",
             // Dil göstərilməsə avtomatik aşkarlama Azərbaycan nitqini türk/yapon/ispan kimi yazır.
             inputAudioTranscription: { languageCodes: ["az"], customVocabulary: BANK_VOCABULARY },
             outputAudioTranscription: { languageCodes: ["az"] },

@@ -105,7 +105,7 @@ export class GeminiVoice {
           this.disconnect("Mikrofon səsi göndərilmədi. Mövcud transkripti qiymətləndirə bilərsiniz.");
         }
       };
-      const limitSec = Math.min(60, credentials.maxDurationSec);
+      const limitSec = Math.min(90, credentials.maxDurationSec);
       this.durationTimer = setTimeout(() => {
         this.endAtLimit(`${limitSec} saniyəlik demo limiti bitdi. Söhbət saxlanılır və qiymətləndirilir.`);
       }, limitSec * 1000);

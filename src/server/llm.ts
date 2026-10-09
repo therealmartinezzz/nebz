@@ -32,7 +32,7 @@ export function modelName(task: LlmTask = "scoring") {
     scoring: process.env.GEMINI_SCORING_MODEL,
     draft: process.env.GEMINI_DRAFT_MODEL,
   };
-  return models[task] || process.env.GEMINI_MODEL || (task === "customer" ? "gemini-3.5-flash-lite" : "gemini-3.8-flash");
+  return models[task] || process.env.GEMINI_MODEL || "gemini-3.8-flash";
 }
 
 /** Açar və ya konfiqurasiya yoxdur — route-lar bunu 503 kimi qaytarır (model xətası 502-dən fərqli). */
@@ -56,8 +56,10 @@ export async function complete({ system, messages, maxTokens, json, task = "scor
   if (!apiKey) throw new LlmConfigError("AI modeli qoşulmayıb: GEMINI_API_KEY təyin edilməyib");
   const inputBytes = Buffer.byteLength(system + messages.map(m => m.content).join(''), 'utf8');
   if (inputBytes > 48_000) throw new Error('Model üçün mətn çox uzundur. Daha qısa məşq və ya xidmət standartı seçin.');
-  const outputLimit = maxTokens * 2;
-  const price = task === 'customer' ? { input: 0.30, output: 2.50 } : { input: 0.75, output: 3.75 };
+  // Qiymətləndirmə MEDIUM düşünür — JSON kəsilməsin deyə daha böyük ehtiyat.
+  const outputLimit = maxTokens * (task === "scoring" ? 4 : 2);
+  // Qiymət modelə görə (USD / 1M token): Flash-Lite ucuzdur.
+  const price = modelName(task).includes("lite") ? { input: 0.30, output: 2.50 } : { input: 0.75, output: 3.75 };
   // UTF-8 baytları ilə ehtiyat hesablanır; uğurlu cavab real token istifadəsi ilə hesablaşır.
   const ticket = await reserveDemo(task, ((inputBytes + 2048) * price.input + outputLimit * price.output) / 1_000_000);
   gemini ??= new GoogleGenAI({ apiKey, httpOptions: { timeout: 70_000, retryOptions: { attempts: 1 } } });
@@ -69,7 +71,13 @@ export async function complete({ system, messages, maxTokens, json, task = "scor
       systemInstruction: system,
       // Düşünmə və cavab üçün məhdud ehtiyat; uzun JSON kəsilərsə xəta göstərilir.
       maxOutputTokens: outputLimit,
-      thinkingConfig: { thinkingLevel: task === "customer" ? ThinkingLevel.MINIMAL : ThinkingLevel.LOW },
+      // Müştəri: tez cavab (ən aşağı səviyyə; MINIMAL yalnız Lite modellərdə var — 3.8 Flash 400 qaytarır).
+      // Qiymətləndirmə: sitat və bal üçün daha dərin (MEDIUM). Qaralama: LOW.
+      thinkingConfig: {
+        thinkingLevel: task === "scoring" ? ThinkingLevel.MEDIUM
+          : task === "customer" && modelName(task).includes("lite") ? ThinkingLevel.MINIMAL
+          : ThinkingLevel.LOW,
+      },
       ...(json ? { responseMimeType: "application/json" } : {}),
     },
   });
