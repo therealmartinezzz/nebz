@@ -20,9 +20,15 @@ export default function Navigation() {
     <a className="skip-link" href="#main-content">Əsas məzmuna keç</a>
     <header className={`topbar${call ? " compact" : ""}`}>
       <Link href="/landing" className="brand" aria-label="Nəbz — ana səhifə">
-        <img src="/brand/nebz-symbol.svg" alt="" width="28" height="28" style={{ display: "block" }} />
-        <span>Nəbz</span>
-        {!call && <span className="brand-caption">xidmət keyfiyyəti</span>}
+        <img
+          src="/brand/nebz-symbol.svg"
+          alt="Nəbz loqosu"
+          width="38"
+          height="38"
+          style={{ width: "38px", height: "38px", display: "block", flexShrink: 0 }}
+        />
+        <span style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "-0.02em" }}>Nəbz</span>
+        {!call && <span className="brand-caption" style={{ fontSize: "14px" }}>xidmət keyfiyyəti</span>}
       </Link>
       {!call && <nav className="nav" aria-label="Əsas naviqasiya">
         {links.map(({ href, label, matches }) => {
