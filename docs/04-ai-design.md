@@ -22,13 +22,16 @@ Mənbə həqiqəti: `supabase/seed.sql`.
 
 ## AI müştəri
 - Prompt: `scenarios.persona_prompt` (`supabase/seed.sql`). Əsas qaydalar: rolundan çıxmır, operatorun ilk sözünü gözləyir, 1–2 cümlə danışır, yoxlamaya bir dəfə etiraz edir, empatiyaya görə sakitləşir, yalnız Azərbaycan dilində.
-- Səsli rejim: OpenAI Realtime (WebRTC), `src/app/api/realtime-session` + `CallClient.tsx`. Transkript: `gpt-4o-transcribe`. Növbə item_id ilə saxlanılır ki, gec gələn transkript sıranı pozmasın.
-- Mətn rejimi (ehtiyat): eyni mətn modeli (Claude və ya Gemini) eyni persona ilə, `src/app/api/customer-reply`.
+- Səsli rejim: Gemini 3.8 Live (WebSocket + Web Audio), `src/app/api/realtime-session` + `src/components/gemini-live.ts`. Server bir ssenariyə bağlı qısaömürlü token yaradır; əsas açar brauzerə çıxmır. Mikrofon PCM16/16 kHz, cavab PCM16/24 kHz-dir. Input/output transkriptləri ayrı rollarda saxlanılır; vaxtlar brauzerdə danışıq/transkript başlanğıcına əsaslanır, söz üzrə dəqiq align deyil.
+- Mətn rejimi: Gemini 3.5 Flash-Lite eyni persona ilə, `src/app/api/customer-reply`. Thinking minimal; müştərinin qısa cavabları üçün.
 
 ## Qiymətləndirici
-- Kod: `src/server/ai.ts` → `scoreCall()`. Model: `src/server/llm.ts` — `LLM_PROVIDER=claude` (`claude-sonnet-5-5`) və ya `gemini` (`gemini-3.8-flash`).
+- Kod: `src/server/ai.ts` → `scoreCall()`. Demo: `LLM_PROVIDER=gemini`, `GEMINI_SCORING_MODEL=gemini-3.8-flash`, thinking low. Hesabatda saxlanan model adı məhz qiymətləndiriciyə aiddir.
 - Qaydalar: yalnız operator qiymətləndirilir; hər bal üçün vaxtla dəqiq sitat; emosiya/xarakter haqqında nəticə yoxdur; qeyri-müəyyənlikdə `confidence: low`; yalnız JSON.
 - **Server tərəfi yoxlama:** hər meyar mövcuddur, bal 0–2 aralığına salınır, cəm serverdə hesablanır; çatışmayan meyar və ya 2-dən az operator replikası → etibarlılıq "aşağı".
+
+## Ssenari yaratmaq
+`draftScenario()` ayrıca `GEMINI_DRAFT_MODEL=gemini-3.8-flash` istifadə edir. Müştəri modelinin dəyişməsi qiymətləndiricini/qaralamanı dəyişmir. Eyni `GEMINI_API_KEY` bütün işlərə xidmət edir. Keyfiyyət testinə başlamazdan əvvəl model konfiqurasiyası sabitlənməlidir.
 
 ## Məlum risklər və cavablar
 | Risk | Cavab |

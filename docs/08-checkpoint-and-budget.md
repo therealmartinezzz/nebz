@@ -1,6 +1,24 @@
 # 08 · Checkpoint və büdcə planı
 
-**Son yenilənmə:** 9 oktyabr 2026, 16:03 (Bakı). Yeni sessiyaya keçəndə əvvəlcə bu faylı, sonra `AGENTS.md` / `CLAUDE.md`-ni oxu.
+**Son yenilənmə:** 9 oktyabr 2026, 17:15 (Bakı). Yeni sessiyaya keçəndə əvvəlcə bu faylı, sonra `AGENTS.md` / `CLAUDE.md`-ni oxu.
+
+## Cari vəziyyət — Gemini inteqrasiyası
+
+Aşağıdakı 16:03 qeydləri tarixi checkpoint-dir; cari qərar və nəticələr bu bölmədədir.
+
+- PR #3 istifadəçi tərəfindən merge edilib, lokal `main` `0c4cdb8` commit-inə çəkilib. İnteqrasiya dəyişiklikləri `fe/gemini-integration` branch-indədir; istifadəçi sınaqdan sonra GitHub push-u təsdiqləyib.
+- İstifadəçi bütün AI funksiyaları üçün Gemini seçib və `.env.local`-a açar əlavə edib; billing üçün $5 kredit yükləyib. Köhnə Anthropic/OpenAI env-ləri çıxarılıb.
+- Mətn müştərisi: `gemini-3.5-flash-lite`. Qiymətləndirmə və ssenari qaralaması: `gemini-3.8-flash`. Səs: `gemini-3.8-live`, Kore, maksimum 60 saniyə və 10 operator replikası. Mətn məşqi 5 operator mesajı ilə məhdudlaşdırılır.
+- Real açarla sintetik, bazaya yazmayan yoxlamada müştəri cavabı və ssenari qaralaması uğurludur. Live endpoint-dən bir istifadəli token alınıb, model səs və çıxış transkripti qaytarıb. Mikrofonlu tam brauzer məşqini istifadəçi yoxlamalıdır.
+- İstifadəçi $5 kredit əlavə edib. Əvvəl 503 qaytaran Flash qiymətləndirməsi son real sintetik yoxlamada uğurludur: 739 giriş + 444 çıxış tokeni, 5522 ms, təxminən $0.002219. Bu, bir qısa nümunədir; keyfiyyət testi və real uzun zəng qiyməti deyil.
+- Açıq demo limiti qurulub: Supabase-də RLS-li `demo_ai_budget`, `demo_ai_usage` və yalnız service_role RPC-ləri. $3.50 ortaq təxmini büdcə restart/deploy arasında qalır; mətn real token istifadəsi ilə hesablaşır, səs üçün $0.045 ehtiyat qalır. Brauzer/dəqiqə/gün limitləri və giriş/çıxış hədləri README-dədir. Schema və limit/hesablaşma/icazə yoxlaması uğurludur; yoxlama dataları rollback edilib.
+- 37 unit yoxlama, TypeScript yoxlaması və production build keçib. İnsanın qiymətləndirmə keyfiyyəti testi və Vercel deploy hələ görülməlidir. Smoke skriptləri: `scripts/verify-gemini-text.ts`, `scripts/verify-gemini-live.mjs`; istifadə qaydası README-dədir.
+- Ödənişli demo üçün AI Studio-da Set up billing → Prepay → minimum $5 kredit. Auto-reload söndürülə, Spend səhifəsində layihənin Monthly spend cap limiti qoyula bilər. Billing təxminən 10 dəqiqə gecikə bildiyi üçün bu, dəqiq xərc zəmanəti deyil. Açar eyni layihədədirsə dəyişməyə ehtiyac yoxdur.
+- Lokal ssenari yükləmə xətası düzəlib: Node.js 20 cari Supabase SDK ilə uyğun deyildi; server Node.js 24 ilə başladılır (`package.json` engines və `.nvmrc`). Yanlış Supabase açarı istifadəçinin verdiyi yeni server secret açarı ilə yalnız `.env.local`-da dəyişilib. Real ssenari oxuması 200 qaytarır, səhifədə ssenari görünür. Açar Git-ə daxil edilmir.
+
+Billing mənbəyi: https://ai.google.dev/gemini-api/docs/billing
+
+## Tarixi qeyd — 16:03
 
 ---
 

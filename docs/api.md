@@ -41,8 +41,16 @@ Client komponentlərindən `fetch` ilə. Hamısı `Content-Type: application/jso
 ### `POST /api/customer-reply` — hazır
 `{ scenarioId, transcript: Line[] }` → `{ text }`
 
-### `POST /api/realtime-session` — hazır
-`{ scenarioId }` → `{ key }`. `OPENAI_API_KEY` yoxdursa **503** + mesaj → UI mətn rejiminə keçidi təklif edir.
+### `POST /api/realtime-session` — hazır (Gemini Live)
+`{ scenarioId }` → `{ key, model, maxDurationSec }`. `key` əsas açar deyil: bir dəfə istifadə olunan, serverdə ssenarinin persona və səs konfiqurasiyasına bağlı Gemini tokenidir. `Cache-Control: no-store`. `GEMINI_API_KEY` yoxdursa **503** + mesaj → UI mətn rejiminə keçidi təklif edir.
+
+Mikrofon icazəsi token istənməzdən əvvəl alınır. Tokenlə yeni bağlantı 30 saniyə ərzində açılmalıdır. Səs zəngi default 60 saniyədir (`GEMINI_LIVE_MAX_SECONDS`, 10–60), maksimum 10 operator replikası. Server tokenin ömrünü də məhdudlaşdırır. Gemini input və output transkriptləri hesabat üçün eyni `Line[]` formasına çevrilir.
+
+### Açıq demo limitləri
+
+AI endpoint-ləri serverin imzaladığı brauzer cookie-si ilə 24 saatlıq/dəqiqəlik limit və ortaq Supabase büdcəsi tətbiq edir. 429 cavabındakı `error` fərdi limit və ya ümumi büdcənin bitdiyini bildirir. Limit bazası əlçatan deyilsə AI çağırışı edilmədən 503 qaytarılır. Mətn zəngi maksimum 5 operator replikası, mesaj 1000 simvol; qiymətləndirmə transkripti maksimum 16 000 simvol; ssenari standartı maksimum 6000 simvoldur. Büdcə və konfiqurasiya detalları README-dədir. Səs tokeni expiry-si açıq bağlantını 60 saniyədə bağlayan sərt server taymeri deyil; müddət brauzerdə də tətbiq edilir.
+
+Model sorğuları: `429` — kvota limiti; `503` — açar/konfiqurasiya və ya Gemini-nin müvəqqəti yüklənməsi. Xəta olduqda mətn/transkript silinmir, istifadəçi yenidən cəhd edə bilər. SDK-nın açar/token ehtiva edə bilən xətası cavabda və log-da göstərilmir.
 
 ### `POST /api/calls` — hazır
 `{ scenarioId, operatorName, mode: "voice"|"text", transcript: Line[], durationSec }` → `{ id }` → `/report/{id}`.
